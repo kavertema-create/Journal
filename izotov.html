@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Izotov's Journal</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    min-height: 100vh;
+    background: #0a0a0a;
+    color: #e8e8e8;
+    font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+    padding: 24px 20px 100px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .brand-tag {
+    font-size: 9px;
+    color: #555;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  h1 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, #fff, #888);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .date { font-size: 12px; color: #555; padding-top: 4px; }
+
+  /* Табы */
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 24px;
+    background: #141414;
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid #1e1e1e;
+  }
+  .tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #666;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab.active {
+    background: #262626;
+    color: #e8e8e8;
+  }
+
+  /* Статистика */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    background: #141414;
+    border-radius: 14px;
+    padding: 16px 14px;
+    border: 1px solid #1e1e1e;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: #666;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .stat-value.pos { color: #34d399; }
+  .stat-value.neg { color: #f87171; }
+  .stat-value.neu { color: #e8e8e8; }
+
+  /* Форма */
+  .form {
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  input, select {
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #e8e8e8;
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border 0.2s;
+    width: 100%;
+  }
+  input:focus, select:focus { border-color: #404040; }
+  input::placeholder { color: #444; }
+  select { cursor: pointer; }
+
+  .date-field { display: flex; flex-direction: column; }
+  .date-field label {
+    font-size: 10px;
+    color: #555;
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.5;
+    cursor: pointer;
+  }
+
+  .rr-block {
+    background: #0a0a0a;
+    border: 1px solid #262626;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .rr-title {
+    font-size: 11px;
+    color: #666;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .rr-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .rr-field label {
+    display: block;
+    font-size: 10px;
+    color: #555;
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  .rr-field input { padding: 10px; font-size: 14px; text-align: center; }
+  .rr-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #1e1e1e;
+  }
+  .rr-label { font-size: 12px; color: #666; }
+  .rr-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    transition: color 0.3s;
+  }
+  .rr-value.good { color: #34d399; }
+  .rr-value.mid { color: #fbbf24; }
+  .rr-value.bad { color: #f87171; }
+  .rr-value.neutral { color: #666; }
+
+  .upload {
+    display: block;
+    background: #0a0a0a;
+    border: 1px dashed #333;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border 0.2s;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .upload:active { border-color: #555; }
+  .upload input { display: none; }
+  .upload-text { font-size: 13px; color: #666; }
+  .upload-preview {
+    display: none;
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  .upload.has-image { padding: 8px; border-style: solid; }
+  .upload.has-image .upload-text { display: none; }
+  .upload.has-image .upload-preview { display: block; }
+
+  .btn {
+    width: 100%;
+    background: #e8e8e8;
+    color: #0a0a0a;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+  .btn:active { transform: scale(0.98); opacity: 0.8; }
+
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .empty {
+    text-align: center;
+    color: #444;
+    font-size: 14px;
+    padding: 40px 0;
+  }
+
+  .entry {
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    overflow: hidden;
+    animation: slide 0.3s ease;
+    position: relative;
+  }
+  @keyframes slide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    z-index: 2;
+  }
+  .entry.win::before { background: #34d399; }
+  .entry.loss::before { background: #f87171; }
+  .entry.be::before { background: #666; }
+
+  .entry-main {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .entry-left { flex: 1; min-width: 0; }
+  .entry-ticker {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .rr-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .rr-badge.good { background: rgba(52,211,153,0.15); color: #34d399; }
+  .rr-badge.mid { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .rr-badge.bad { background: rgba(248,113,113,0.15); color: #f87171; }
+  .entry-note {
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .entry-date { font-size: 10px; color: #444; margin-top: 2px; }
+  .entry-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .entry-pnl {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .entry-pnl.pos { color: #34d399; }
+  .entry-pnl.neg { color: #f87171; }
+  .entry-pnl.neu { color: #888; }
+
+  .del {
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .del:hover, .del:active { color: #f87171; }
+
+  .entry-shot {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    display: block;
+    border-top: 1px solid #1e1e1e;
+    cursor: pointer;
+  }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .chip {
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    color: #888;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .chip.active {
+    background: #e8e8e8;
+    color: #0a0a0a;
+    border-color: #e8e8e8;
+  }
+
+  /* Календарь */
+  .cal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .cal-month {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-transform: capitalize;
+  }
+  .cal-nav { display: flex; gap: 6px; }
+  .cal-nav button {
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    color: #888;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .cal-nav button:active {
+    background: #262626;
+    color: #e8e8e8;
+  }
+
+  .cal-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+  .cal-weekdays div {
+    text-align: center;
+    font-size: 10px;
+    color: #555;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 6px 0;
+  }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 20px;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    background: #0f0f0f;
+    border: 1px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cal-day.empty-day { background: transparent; border-color: transparent; }
+  .cal-day.today { border-color: #666; }
+  .cal-day.profit {
+    background: rgba(52,211,153,0.12);
+    border-color: rgba(52,211,153,0.4);
+  }
+  .cal-day.loss {
+    background: rgba(248,113,113,0.12);
+    border-color: rgba(248,113,113,0.4);
+  }
+
+  .cal-num {
+    font-size: 11px;
+    color: #555;
+    position: absolute;
+    top: 5px;
+    left: 6px;
+    font-weight: 500;
+  }
+  .cal-day.profit .cal-num { color: rgba(52,211,153,0.7); }
+  .cal-day.loss .cal-num { color: rgba(248,113,113,0.7); }
+
+  .cal-pnl {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-top: 10px;
+    line-height: 1.1;
+    text-align: center;
+    padding: 0 2px;
+    word-break: break-all;
+  }
+  .cal-day.profit .cal-pnl { color: #34d399; }
+  .cal-day.loss .cal-pnl { color: #f87171; }
+
+  .cal-summary {
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .cal-summary-label {
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .cal-summary-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .cal-summary-value.pos { color: #34d399; }
+  .cal-summary-value.neg { color: #f87171; }
+  .cal-summary-value.neu { color: #888; }
+
+  .cal-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 14px;
+    justify-content: center;
+    font-size: 11px;
+    color: #555;
+  }
+  .cal-legend span { display: flex; align-items: center; gap: 6px; }
+  .cal-dot { width: 10px; height: 10px; border-radius: 3px; }
+  .cal-dot.g { background: rgba(52,211,153,0.5); border: 1px solid rgba(52,211,153,0.8); }
+  .cal-dot.r { background: rgba(248,113,113,0.5); border: 1px solid rgba(248,113,113,0.8); }
+
+  /* Модалка */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal.on { display: flex; }
+  .modal img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 12px;
+  }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-tag">Trading Log</div>
+      <h1>Izotov's Journal</h1>
+    </div>
+    <div class="date" id="today"></div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" data-t="journal">Сделки</button>
+    <button class="tab" data-t="calendar">Календарь</button>
+    <button class="tab" data-t="calc">RR Кальк</button>
+  </div>
+
+  <div id="view-journal">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-label">Сделок</div>
+        <div class="stat-value neu" id="s-total">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Winrate</div>
+        <div class="stat-value neu" id="s-wr">0%</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">P&L</div>
+        <div class="stat-value neu" id="s-pnl">$0</div>
+      </div>
+    </div>
+
+    <div class="form">
+      <div class="form-row">
+        <input type="text" id="in-ticker" placeholder="Тикер" maxlength="10">
+        <select id="in-result">
+          <option value="win">✅ Профит</option>
+          <option value="loss">❌ Убыток</option>
+          <option value="be">➖ Безубыток</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="date-field" style="width:100%">
+          <label>Дата сделки</label>
+          <input type="date" id="in-date">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <input type="number" id="in-pnl" placeholder="P&L ($)" step="0.01">
+      </div>
+
+      <div class="rr-block">
+        <div class="rr-title">Risk / Reward</div>
+        <div class="rr-inputs">
+          <div class="rr-field">
+            <label>Вход</label>
+            <input type="number" id="rr-entry" step="0.01" inputmode="decimal">
+          </div>
+          <div class="rr-field">
+            <label>Стоп</label>
+            <input type="number" id="rr-stop" step="0.01" inputmode="decimal">
+          </div>
+          <div class="rr-field">
+            <label>Тейк</label>
+            <input type="number" id="rr-take" step="0.01" inputmode="decimal">
+          </div>
+        </div>
+        <div class="rr-result">
+          <span class="rr-label">Соотношение</span>
+          <span class="rr-value neutral" id="rr-value">—</span>
+        </div>
+      </div>
+
+      <label class="upload" id="upload-label">
+        <input type="file" id="in-shot" accept="image/*">
+        <div class="upload-text">📎 Прикрепить скриншот сделки</div>
+        <img class="upload-preview" id="upload-preview">
+      </label>
+
+      <div class="form-row">
+        <input type="text" id="in-note" placeholder="Заметка (необязательно)" maxlength="80">
+      </div>
+      <button class="btn" id="add">Добавить сделку</button>
+    </div>
+
+    <div class="filters">
+      <button class="chip active" data-f="all">Все</button>
+      <button class="chip" data-f="win">Профит</button>
+      <button class="chip" data-f="loss">Убыток</button>
+      <button class="chip" data-f="be">Безубыток</button>
+    </div>
+
+    <div class="list" id="list"></div>
+  </div>
+
+  <div id="view-calendar" style="display:none">
+    <div class="cal-header">
+      <div class="cal-month" id="cal-month">—</div>
+      <div class="cal-nav">
+        <button id="cal-prev">‹</button>
+        <button id="cal-next">›</button>
+      </div>
+    </div>
+
+    <div class="cal-weekdays">
+      <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+    </div>
+
+    <div class="cal-grid" id="cal-grid"></div>
+
+    <div class="cal-summary">
+      <div class="cal-summary-label">Итого за месяц</div>
+      <div class="cal-summary-value neu" id="cal-total">$0</div>
+    </div>
+
+    <div class="cal-legend">
+      <span><div class="cal-dot g"></div> Профит</span>
+      <span><div class="cal-dot r"></div> Убыток</span>
+    </div>
+  </div>
+
+  <div id="view-calc" style="display:none">
+    <div class="form">
+      <div class="rr-block" style="margin-bottom:0">
+        <div class="rr-title">Калькулятор Risk / Reward</div>
+        <div class="rr-inputs">
+          <div class="rr-field">
+            <label>Вход</label>
+            <input type="number" id="c-entry" step="0.01" inputmode="decimal" placeholder="100">
+          </div>
+          <div class="rr-field">
+            <label>Стоп</label>
+            <input type="number" id="c-stop" step="0.01" inputmode="decimal" placeholder="95">
+          </div>
+          <div class="rr-field">
+            <label>Тейк</label>
+            <input type="number" id="c-take" step="0.01" inputmode="decimal" placeholder="115">
+          </div>
+        </div>
+        <div class="rr-result">
+          <span class="rr-label">R:R</span>
+          <span class="rr-value neutral" id="c-rr">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form">
+      <div class="rr-block" style="margin-bottom:0">
+        <div class="rr-title">Размер позиции</div>
+        <div class="rr-inputs" style="grid-template-columns: 1fr 1fr">
+          <div class="rr-field">
+            <label>Депозит ($)</label>
+            <input type="number" id="c-dep" step="0.01" inputmode="decimal" placeholder="1000">
+          </div>
+          <div class="rr-field">
+            <label>Риск (%)</label>
+            <input type="number" id="c-risk" step="0.1" inputmode="decimal" placeholder="1">
+          </div>
+        </div>
+        <div class="rr-result" style="margin-bottom:8px">
+          <span class="rr-label">Риск в $</span>
+          <span class="rr-value neutral" id="c-riskusd">—</span>
+        </div>
+        <div class="rr-result">
+          <span class="rr-label">Размер позиции</span>
+          <span class="rr-value neutral" id="c-size">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form">
+      <div class="rr-block" style="margin-bottom:0">
+        <div class="rr-title">Прибыль по R:R</div>
+        <div class="rr-inputs" style="grid-template-columns: 1fr 1fr">
+          <div class="rr-field">
+            <label>Риск ($)</label>
+            <input type="number" id="c-rmoney" step="0.01" inputmode="decimal" placeholder="100">
+          </div>
+          <div class="rr-field">
+            <label>R:R</label>
+            <input type="number" id="c-rrnum" step="0.1" inputmode="decimal" placeholder="2">
+          </div>
+        </div>
+        <div class="rr-result">
+          <span class="rr-label">Профит</span>
+          <span class="rr-value pos" id="c-profit">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <img id="modal-img">
+  </div>
+
+<script>
+  const KEY = 'trade_journal_izotov_v1';
+  let entries = JSON.parse(localStorage.getItem(KEY) || '[]');
+  let filter = 'all';
+  let currentShot = null;
+  let calDate = new Date();
+
+  const d = new Date();
+  const days = ['вс','пн','вт','ср','чт','пт','сб'];
+  const months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+  document.getElementById('today').textContent =
+    `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  document.getElementById('in-date').value = todayStr;
+
+  function calcRR(entry, stop, take) {
+    if (!entry || !stop || !take) return null;
+    const risk = Math.abs(entry - stop);
+    const reward = Math.abs(take - entry);
+    if (risk === 0) return null;
+    return reward / risk;
+  }
+  function rrClass(rr) {
+    if (rr === null) return 'neutral';
+    if (rr >= 2) return 'good';
+    if (rr >= 1) return 'mid';
+    return 'bad';
+  }
+  function rrLabel(rr) { return rr === null ? '—' : rr.toFixed(2); }
+
+  function updateRR() {
+    const e = parseFloat(document.getElementById('rr-entry').value);
+    const s = parseFloat(document.getElementById('rr-stop').value);
+    const t = parseFloat(document.getElementById('rr-take').value);
+    const rr = calcRR(e, s, t);
+    const el = document.getElementById('rr-value');
+    el.textContent = rrLabel(rr);
+    el.className = 'rr-value ' + rrClass(rr);
+  }
+  ['rr-entry','rr-stop','rr-take'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateRR);
+  });
+
+  document.getElementById('in-shot').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      currentShot = ev.target.result;
+      document.getElementById('upload-preview').src = currentShot;
+      document.getElementById('upload-label').classList.add('has-image');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function render() {
+    const total = entries.length;
+    const wins = entries.filter(e => e.result === 'win').length;
+    const wr = total ? Math.round((wins / total) * 100) : 0;
+    const pnl = entries.reduce((s, e) => s + (e.pnl || 0), 0);
+
+    document.getElementById('s-total').textContent = total;
+    document.getElementById('s-wr').textContent = wr + '%';
+    document.getElementById('s-wr').className = 'stat-value ' + (wr >= 50 ? 'pos' : total ? 'neg' : 'neu');
+
+    const pnlEl = document.getElementById('s-pnl');
+    pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + Math.abs(pnl).toFixed(0);
+    pnlEl.className = 'stat-value ' + (pnl > 0 ? 'pos' : pnl < 0 ? 'neg' : 'neu');
+
+    const list = document.getElementById('list');
+    const filtered = filter === 'all' ? entries : entries.filter(e => e.result === filter);
+
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty">Пока пусто. Добавь первую сделку ↑</div>';
+      return;
+    }
+
+    list.innerHTML = filtered.slice().reverse().map((e) => {
+      const realIdx = entries.indexOf(e);
+      const pnlStr = e.pnl ? (e.pnl > 0 ? '+' : '−') + '$' + Math.abs(e.pnl).toFixed(2) : '—';
+      const pnlClass = e.pnl > 0 ? 'pos' : e.pnl < 0 ? 'neg' : 'neu';
+      const rr = e.rr;
+      const rrBadge = rr !== null && rr !== undefined
+        ? `<span class="rr-badge ${rrClass(rr)}">RR ${rr.toFixed(2)}</span>` : '';
+      const shot = e.shot ? `<img class="entry-shot" src="${e.shot}" data-full="${e.shot}">` : '';
+      const dateStr = e.date ? e.date.split('-').reverse().join('.') : '';
+      return `
+        <div class="entry ${e.result}">
+          <div class="entry-main">
+            <div class="entry-left">
+              <div class="entry-ticker">${esc(e.ticker)} ${rrBadge}</div>
+              ${e.note ? `<div class="entry-note">${esc(e.note)}</div>` : ''}
+              ${dateStr ? `<div class="entry-date">${dateStr}</div>` : ''}
+            </div>
+            <div class="entry-right">
+              <div class="entry-pnl ${pnlClass}">${pnlStr}</div>
+              <button class="del" data-i="${realIdx}">×</button>
+            </div>
+          </div>
+          ${shot}
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.del').forEach(b => {
+      b.onclick = (ev) => {
+        ev.stopPropagation();
+        entries.splice(+b.dataset.i, 1);
+        save(); render(); renderCalendar();
+      };
+    });
+
+    list.querySelectorAll('.entry-shot').forEach(img => {
+      img.onclick = () => {
+        document.getElementById('modal-img').src = img.dataset.full;
+        document.getElementById('modal').classList.add('on');
+      };
+    });
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(entries)); }
+
+  document.getElementById('add').onclick = () => {
+    const ticker = document.getElementById('in-ticker').value.trim().toUpperCase();
+    const result = document.getElementById('in-result').value;
+    const date = document.getElementById('in-date').value || todayStr;
+    const pnl = parseFloat(document.getElementById('in-pnl').value) || 0;
+    const note = document.getElementById('in-note').value.trim();
+    const e = parseFloat(document.getElementById('rr-entry').value);
+    const s = parseFloat(document.getElementById('rr-stop').value);
+    const t = parseFloat(document.getElementById('rr-take').value);
+    const rr = calcRR(e, s, t);
+
+    if (!ticker) { document.getElementById('in-ticker').focus(); return; }
+
+    entries.push({ ticker, result, pnl, note, rr, date, shot: currentShot, ts: Date.now() });
+    save(); render(); renderCalendar();
+
+    document.getElementById('in-ticker').value = '';
+    document.getElementById('in-pnl').value = '';
+    document.getElementById('in-note').value = '';
+    document.getElementById('rr-entry').value = '';
+    document.getElementById('rr-stop').value = '';
+    document.getElementById('rr-take').value = '';
+    document.getElementById('in-shot').value = '';
+    document.getElementById('upload-preview').src = '';
+    document.getElementById('upload-label').classList.remove('has-image');
+    document.getElementById('in-date').value = todayStr;
+    currentShot = null;
+    updateRR();
+    document.getElementById('in-ticker').focus();
+  };
+
+  document.getElementById('in-note').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('add').click();
+  });
+
+  document.querySelectorAll('.chip').forEach(c => {
+    c.onclick = () => {
+      document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      filter = c.dataset.f;
+      render();
+    };
+  });
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('view-journal').style.display = t.dataset.t === 'journal' ? 'block' : 'none';
+      document.getElementById('view-calendar').style.display = t.dataset.t === 'calendar' ? 'block' : 'none';
+      document.getElementById('view-calc').style.display = t.dataset.t === 'calc' ? 'block' : 'none';
+      if (t.dataset.t === 'calendar') renderCalendar();
+    };
+  });
+
+  function renderCalendar() {
+    const year = calDate.getFullYear();
+    const month = calDate.getMonth();
+    const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    document.getElementById('cal-month').textContent = monthNames[month] + ' ' + year;
+
+    const byDay = {};
+    entries.forEach(e => {
+      if (!e.date) return;
+      if (!byDay[e.date]) byDay[e.date] = 0;
+      byDay[e.date] += (e.pnl || 0);
+    });
+
+    const firstDay = new Date(year, month, 1);
+    let startWeekday = firstDay.getDay();
+    startWeekday = startWeekday === 0 ? 6 : startWeekday - 1;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const grid = document.getElementById('cal-grid');
+    let html = '';
+    for (let i = 0; i < startWeekday; i++) html += '<div class="cal-day empty-day"></div>';
+
+    const today = new Date();
+    const todayKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+
+    let monthTotal = 0;
+    for (let day = 1; day <= daysInMonth; day++) {
+      const key = year + '-' + String(month+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+      const val = byDay[key] || 0;
+      const has = byDay[key] !== undefined;
+      monthTotal += val;
+
+      let cls = 'cal-day';
+      if (has && val > 0) cls += ' profit';
+      else if (has && val < 0) cls += ' loss';
+      if (key === todayKey) cls += ' today';
+
+      let pnlText = '';
+      if (has && val !== 0) {
+        const sign = val > 0 ? '+' : '−';
+        const abs = Math.abs(val);
+        let num;
+        if (abs >= 1000) num = (abs/1000).toFixed(1) + 'k';
+        else num = abs.toFixed(0);
+        pnlText = sign + '$' + num;
+      } else if (has && val === 0) {
+        pnlText = '$0';
+      }
+
+      html += `<div class="${cls}">
+        <span class="cal-num">${day}</span>
+        ${pnlText ? `<span class="cal-pnl">${pnlText}</span>` : ''}
+      </div>`;
+    }
+    grid.innerHTML = html;
+
+    const totEl = document.getElementById('cal-total');
+    if (monthTotal === 0) {
+      totEl.textContent = '$0';
+      totEl.className = 'cal-summary-value neu';
+    } else {
+      const sign = monthTotal > 0 ? '+' : '−';
+      totEl.textContent = sign + '$' + Math.abs(monthTotal).toFixed(2);
+      totEl.className = 'cal-summary-value ' + (monthTotal > 0 ? 'pos' : 'neg');
+    }
+  }
+
+  document.getElementById('cal-prev').onclick = () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); };
+  document.getElementById('cal-next').onclick = () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); };
+
+  function calcTab() {
+    const e = parseFloat(document.getElementById('c-entry').value);
+    const s = parseFloat(document.getElementById('c-stop').value);
+    const t = parseFloat(document.getElementById('c-take').value);
+    const rr = calcRR(e, s, t);
+    const el = document.getElementById('c-rr');
+    el.textContent = rrLabel(rr);
+    el.className = 'rr-value ' + rrClass(rr);
+
+    const dep = parseFloat(document.getElementById('c-dep').value);
+    const riskPct = parseFloat(document.getElementById('c-risk').value);
+    const riskUsd = (dep && riskPct) ? dep * riskPct / 100 : null;
+    document.getElementById('c-riskusd').textContent = riskUsd ? '$' + riskUsd.toFixed(2) : '—';
+
+    if (riskUsd && e && s) {
+      const stopDist = Math.abs(e - s);
+      if (stopDist > 0) {
+        document.getElementById('c-size').textContent = (riskUsd / stopDist).toFixed(2);
+      }
+    } else {
+      document.getElementById('c-size').textContent = '—';
+    }
+
+    const rmoney = parseFloat(document.getElementById('c-rmoney').value);
+    const rrnum = parseFloat(document.getElementById('c-rrnum').value);
+    const profit = (rmoney && rrnum) ? rmoney * rrnum : null;
+    document.getElementById('c-profit').textContent = profit ? '$' + profit.toFixed(2) : '—';
+  }
+  ['c-entry','c-stop','c-take','c-dep','c-risk','c-rmoney','c-rrnum'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calcTab);
+  });
+
+  document.getElementById('modal').onclick = () => {
+    document.getElementById('modal').classList.remove('on');
+  };
+
+  render();
+  renderCalendar();
+</script>
+</body>
+</html>
