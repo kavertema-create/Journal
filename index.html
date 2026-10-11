@@ -16,6 +16,80 @@
     position: relative;
   }
 
+  /* ===== ЗАСТАВКА ===== */
+  .splash {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #0a0a0a;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  .splash.hide { opacity: 0; visibility: hidden; pointer-events: none; }
+
+  .splash canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    opacity: 0.7;
+  }
+
+  .splash-content {
+    position: relative; z-index: 2;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .splash-tag {
+    font-size: 10px;
+    color: #555;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+  .splash-title {
+    font-size: clamp(32px, 9vw, 52px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    background: linear-gradient(135deg, #fff 0%, #888 60%, #fff 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: fadeUp 0.8s ease 1s forwards, shine 2.5s ease 1.2s infinite;
+    opacity: 0;
+  }
+  .splash-sub {
+    font-size: 13px;
+    color: #444;
+    margin-top: 14px;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.4s forwards;
+  }
+  .splash-line {
+    width: 40px;
+    height: 2px;
+    background: #34d399;
+    margin: 18px auto 0;
+    border-radius: 1px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1.6s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes shine {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* ===== Анимированный фон ===== */
   .bg-waves {
     position: fixed; inset: 0; z-index: 0; overflow: hidden;
     pointer-events: none; opacity: 0.5; transition: opacity 0.8s;
@@ -299,7 +373,6 @@
   .toast.success { border-color: #34d399; color: #34d399; }
   .toast.error { border-color: #f87171; color: #f87171; }
 
-  /* Модалка пароля */
   .pwd-modal {
     position: fixed; inset: 0; background: rgba(0,0,0,0.85);
     backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -335,11 +408,21 @@
   .pwd-btn.secondary { background: #1e1e1e; color: #e8e8e8; }
   .pwd-btn:active { transform: scale(0.97); }
 
-  /* Скрытие элементов для зрителей */
   .hide-viewer { display: none !important; }
 </style>
 </head>
 <body>
+
+<!-- ===== ЗАСТАВКА ===== -->
+<div class="splash" id="splash">
+  <canvas id="splash-canvas"></canvas>
+  <div class="splash-content">
+    <div class="splash-tag">Trading Log</div>
+    <div class="splash-title">Izotov's Journal</div>
+    <div class="splash-line"></div>
+    <div class="splash-sub">Строю график...</div>
+  </div>
+</div>
 
 <div class="bg-waves" id="bg-waves">
   <div class="wave wave1"></div>
@@ -535,7 +618,7 @@
   </div>
 </div>
 
-</div><!-- .content -->
+</div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -567,6 +650,121 @@
   let suppressSync = false;
   let isEditor = false;
 
+  // ===== ЗАСТАВКА С ГРАФИКОМ =====
+  (function splash() {
+    const canvas = document.getElementById('splash-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Генерируем свечи
+    const candles = [];
+    const COUNT = 24;
+    let price = 50;
+    for (let i = 0; i < COUNT; i++) {
+      const o = price;
+      const c = o + (Math.random() - 0.45) * 12;
+      const h = Math.max(o, c) + Math.random() * 6;
+      const l = Math.min(o, c) - Math.random() * 6;
+      candles.push({ o, c, h, l });
+      price = c;
+    }
+
+    // Нормализация
+    const all = candles.flatMap(c => [c.h, c.l]);
+    const max = Math.max(...all);
+    const min = Math.min(...all);
+    const range = max - min || 1;
+
+    let progress = 0; // 0..1
+    let startTime = null;
+    const DURATION = 1800; // 1.8 сек на отрисовку
+
+    function draw(t) {
+      if (!startTime) startTime = t;
+      const elapsed = t - startTime;
+      progress = Math.min(1, elapsed / DURATION);
+
+      ctx.clearRect(0, 0, W, H);
+
+      const padX = W * 0.08;
+      const padY = H * 0.25;
+      const chartW = W - padX * 2;
+      const chartH = H - padY * 2;
+
+      const cw = chartW / COUNT;
+      const bodyW = cw * 0.55;
+
+      const yOf = v => padY + chartH - ((v - min) / range) * chartH;
+
+      // Сколько свечей рисуем
+      const visible = progress * COUNT;
+
+      candles.forEach((c, i) => {
+        const appear = Math.min(1, Math.max(0, visible - i));
+        if (appear <= 0) return;
+
+        const x = padX + i * cw + cw / 2;
+        const up = c.c >= c.o;
+
+        // Цвета: вверх — светлые, вниз — тёмные
+        const wickColor = up ? 'rgba(255,255,255,0.55)' : 'rgba(80,80,80,0.7)';
+        const bodyColor = up ? 'rgba(240,240,240,0.95)' : 'rgba(50,50,50,0.95)';
+        const glow = up ? 'rgba(255,255,255,0.35)' : 'rgba(60,60,60,0.3)';
+
+        // Прозрачность появления
+        const alpha = appear;
+
+        // Тень (фитиль)
+        ctx.strokeStyle = wickColor;
+        ctx.globalAlpha = alpha * 0.8;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(x, yOf(c.h));
+        ctx.lineTo(x, yOf(c.l));
+        ctx.stroke();
+
+        // Тело
+        const bodyTop = yOf(Math.max(c.o, c.c));
+        const bodyBot = yOf(Math.min(c.o, c.c));
+        const bodyH = Math.max(2, bodyBot - bodyTop);
+
+        ctx.globalAlpha = alpha;
+        ctx.shadowColor = glow;
+        ctx.shadowBlur = up ? 12 : 4;
+        ctx.fillStyle = bodyColor;
+        ctx.fillRect(x - bodyW / 2, bodyTop, bodyW, bodyH);
+        ctx.shadowBlur = 0;
+      });
+
+      ctx.globalAlpha = 1;
+
+      if (progress < 1) {
+        requestAnimationFrame(draw);
+      } else {
+        // Свечи нарисованы — ждём и убираем
+        setTimeout(() => {
+          document.getElementById('splash').classList.add('hide');
+          setTimeout(() => {
+            const s = document.getElementById('splash');
+            if (s) s.style.display = 'none';
+          }, 900);
+        }, 500);
+      }
+    }
+
+    requestAnimationFrame(draw);
+  })();
+
   // ===== AUTH =====
   function checkAuth() {
     isEditor = localStorage.getItem(AUTH_KEY) === 'true';
@@ -596,7 +794,6 @@
 
   document.getElementById('auth-btn').onclick = () => {
     if (isEditor) {
-      // Выход
       if (confirm('Выйти из режима редактирования?')) {
         localStorage.removeItem(AUTH_KEY);
         isEditor = false;
@@ -604,7 +801,6 @@
         showToast('Режим просмотра');
       }
     } else {
-      // Вход
       document.getElementById('pwd-modal').classList.add('on');
       document.getElementById('pwd-input').value = '';
       setTimeout(() => document.getElementById('pwd-input').focus(), 100);
@@ -637,7 +833,7 @@
     }
   }
 
-  // ===== ПРИВЕТСТВИЕ ПО ВРЕМЕНИ =====
+  // ===== ПРИВЕТСТВИЕ =====
   function setGreeting() {
     const h = new Date().getHours();
     let g;
@@ -650,7 +846,6 @@
   setGreeting();
   setInterval(setGreeting, 60000);
 
-  // ===== ДАТА =====
   const d = new Date();
   const days = ['вс','пн','вт','ср','чт','пт','сб'];
   const months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
