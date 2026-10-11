@@ -417,10 +417,8 @@
 <div class="splash" id="splash">
   <canvas id="splash-canvas"></canvas>
   <div class="splash-content">
-    <div class="splash-tag">Trading Log</div>
     <div class="splash-title">Izotov's Journal</div>
     <div class="splash-line"></div>
-    <div class="splash-sub">Строю график...</div>
   </div>
 </div>
 
@@ -444,7 +442,6 @@
 </header>
 
 <div class="greeting">
-  <div class="greeting-line1">Trading Log</div>
   <div class="greeting-line2" id="greeting-name">Доброе утро, Артём</div>
 </div>
 
@@ -687,7 +684,7 @@
 
     let progress = 0; // 0..1
     let startTime = null;
-    const DURATION = 1800; // 1.8 сек на отрисовку
+    const DURATION = 1200; // 1.2 сек на отрисовку
 
     function draw(t) {
       if (!startTime) startTime = t;
