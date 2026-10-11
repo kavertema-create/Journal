@@ -6,65 +6,50 @@
 <title>Izotov's Journal</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
   body {
-    min-height: 100vh;
-    background: #0a0a0a;
-    color: #e8e8e8;
+    min-height: 100vh; background: #0a0a0a; color: #e8e8e8;
     font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-    padding: 24px 20px 100px;
-    -webkit-font-smoothing: antialiased;
+    padding: 24px 20px 100px; -webkit-font-smoothing: antialiased;
   }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 24px;
-  }
+  header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
   .brand { display: flex; flex-direction: column; gap: 2px; }
-  .brand-tag {
-    font-size: 9px; color: #555; letter-spacing: 0.25em;
-    text-transform: uppercase; font-weight: 600;
-  }
+  .brand-tag { font-size: 9px; color: #555; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 600; }
   h1 {
     font-size: 28px; font-weight: 600; letter-spacing: -0.04em;
     background: linear-gradient(135deg, #fff, #888);
-    -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
   .date { font-size: 12px; color: #555; padding-top: 4px; }
 
+  .sync {
+    display: flex; align-items: center; gap: 8px;
+    background: #141414; border: 1px solid #1e1e1e;
+    border-radius: 10px; padding: 8px 14px;
+    font-size: 12px; color: #666; margin-bottom: 16px;
+  }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; transition: background 0.3s; }
+  .sync.online .sync-dot { background: #34d399; box-shadow: 0 0 8px #34d399; }
+  .sync.syncing .sync-dot { background: #fbbf24; animation: pulse-sync 1s infinite; }
+  .sync.error .sync-dot { background: #f87171; }
+  .sync.online { color: #34d399; }
+  .sync.error { color: #f87171; }
+  @keyframes pulse-sync { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
   .tabs {
     display: flex; gap: 6px; margin-bottom: 24px;
-    background: #141414; padding: 5px; border-radius: 12px;
-    border: 1px solid #1e1e1e;
+    background: #141414; padding: 5px; border-radius: 12px; border: 1px solid #1e1e1e;
   }
   .tab {
     flex: 1; background: none; border: none; color: #666;
     padding: 10px; border-radius: 8px; font-size: 13px;
-    font-family: inherit; font-weight: 500; cursor: pointer;
-    transition: all 0.2s;
+    font-family: inherit; font-weight: 500; cursor: pointer; transition: all 0.2s;
   }
   .tab.active { background: #262626; color: #e8e8e8; }
 
-  .stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 24px;
-  }
-  .stat {
-    background: #141414; border-radius: 14px;
-    padding: 16px 14px; border: 1px solid #1e1e1e;
-  }
-  .stat-label {
-    font-size: 10px; color: #666; letter-spacing: 0.1em;
-    text-transform: uppercase; margin-bottom: 6px;
-  }
-  .stat-value {
-    font-size: 20px; font-weight: 600; letter-spacing: -0.02em;
-  }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .stat { background: #141414; border-radius: 14px; padding: 16px 14px; border: 1px solid #1e1e1e; }
+  .stat-label { font-size: 10px; color: #666; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-value { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
   .stat-value.pos { color: #34d399; }
   .stat-value.neg { color: #f87171; }
   .stat-value.neu { color: #e8e8e8; }
@@ -72,309 +57,164 @@
   .stat-value.mid { color: #fbbf24; }
   .stat-value.bad { color: #f87171; }
 
-  .form {
-    background: #141414; border: 1px solid #1e1e1e;
-    border-radius: 18px; padding: 18px; margin-bottom: 20px;
-  }
+  .form { background: #141414; border: 1px solid #1e1e1e; border-radius: 18px; padding: 18px; margin-bottom: 20px; }
   .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
   input, select {
-    background: #0a0a0a; border: 1px solid #262626;
-    border-radius: 10px; padding: 12px 14px; color: #e8e8e8;
-    font-size: 15px; font-family: inherit; outline: none;
-    transition: border 0.2s; width: 100%;
+    background: #0a0a0a; border: 1px solid #262626; border-radius: 10px;
+    padding: 12px 14px; color: #e8e8e8; font-size: 15px;
+    font-family: inherit; outline: none; transition: border 0.2s; width: 100%;
   }
   input:focus, select:focus { border-color: #404040; }
   input::placeholder { color: #444; }
   select { cursor: pointer; }
 
   .date-field { display: flex; flex-direction: column; }
-  .date-field label {
-    font-size: 10px; color: #555; margin-bottom: 4px;
-    letter-spacing: 0.05em; text-transform: uppercase;
-  }
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(1); opacity: 0.5; cursor: pointer;
-  }
+  .date-field label { font-size: 10px; color: #555; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; cursor: pointer; }
 
-  .rr-block {
-    background: #0a0a0a; border: 1px solid #262626;
-    border-radius: 12px; padding: 14px; margin-bottom: 10px;
-  }
-  .rr-title {
-    font-size: 11px; color: #666; letter-spacing: 0.08em;
-    text-transform: uppercase; margin-bottom: 10px;
-  }
-  .rr-inputs {
-    display: grid; grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px; margin-bottom: 12px;
-  }
-  .rr-field label {
-    display: block; font-size: 10px; color: #555;
-    margin-bottom: 4px; letter-spacing: 0.05em;
-  }
+  .rr-block { background: #0a0a0a; border: 1px solid #262626; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+  .rr-title { font-size: 11px; color: #666; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+  .rr-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .rr-field label { display: block; font-size: 10px; color: #555; margin-bottom: 4px; letter-spacing: 0.05em; }
   .rr-field input { padding: 10px; font-size: 14px; text-align: center; }
-  .rr-result {
-    display: flex; justify-content: space-between;
-    align-items: center; padding-top: 12px;
-    border-top: 1px solid #1e1e1e;
-  }
+  .rr-result { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid #1e1e1e; }
   .rr-label { font-size: 12px; color: #666; }
-  .rr-value {
-    font-size: 22px; font-weight: 700;
-    letter-spacing: -0.02em; transition: color 0.3s;
-  }
+  .rr-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; transition: color 0.3s; }
   .rr-value.good { color: #34d399; }
   .rr-value.mid { color: #fbbf24; }
   .rr-value.bad { color: #f87171; }
   .rr-value.neutral { color: #666; }
 
   .upload {
-    display: block; background: #0a0a0a;
-    border: 1px dashed #333; border-radius: 12px;
-    padding: 16px; text-align: center; cursor: pointer;
-    transition: border 0.2s; margin-bottom: 10px;
-    position: relative; overflow: hidden;
+    display: block; background: #0a0a0a; border: 1px dashed #333;
+    border-radius: 12px; padding: 16px; text-align: center; cursor: pointer;
+    transition: border 0.2s; margin-bottom: 10px; position: relative; overflow: hidden;
   }
   .upload:active { border-color: #555; }
   .upload input { display: none; }
   .upload-text { font-size: 13px; color: #666; }
-  .upload-preview {
-    display: none; width: 100%; max-height: 200px;
-    object-fit: cover; border-radius: 8px;
-  }
+  .upload-preview { display: none; width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; }
   .upload.has-image { padding: 8px; border-style: solid; }
   .upload.has-image .upload-text { display: none; }
   .upload.has-image .upload-preview { display: block; }
 
   .btn {
-    width: 100%; background: #e8e8e8; color: #0a0a0a;
-    border: none; border-radius: 12px; padding: 14px;
-    font-size: 15px; font-weight: 600; font-family: inherit;
-    cursor: pointer; transition: transform 0.1s, opacity 0.2s;
+    width: 100%; background: #e8e8e8; color: #0a0a0a; border: none;
+    border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 600;
+    font-family: inherit; cursor: pointer; transition: transform 0.1s, opacity 0.2s;
   }
   .btn:active { transform: scale(0.98); opacity: 0.8; }
 
-  /* Data tools */
-  .data-tools {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
+  .data-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
   .data-btn {
-    background: #141414;
-    border: 1px solid #1e1e1e;
-    color: #aab8cc;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-family: inherit;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    background: #141414; border: 1px solid #1e1e1e; color: #aab8cc;
+    padding: 12px; border-radius: 12px; font-size: 13px; font-family: inherit;
+    font-weight: 500; cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
   }
   .data-btn:active { background: #1e1e1e; transform: scale(0.97); }
   .data-btn.export { color: #34d399; }
   .data-btn.import { color: #60a5fa; }
 
   .list { display: flex; flex-direction: column; gap: 10px; }
-  .empty {
-    text-align: center; color: #444; font-size: 14px; padding: 40px 0;
-  }
+  .empty { text-align: center; color: #444; font-size: 14px; padding: 40px 0; }
 
   .entry {
-    background: #141414; border: 1px solid #1e1e1e;
-    border-radius: 14px; overflow: hidden;
-    animation: slide 0.3s ease; position: relative;
+    background: #141414; border: 1px solid #1e1e1e; border-radius: 14px;
+    overflow: hidden; animation: slide 0.3s ease; position: relative;
   }
-  @keyframes slide {
-    from { opacity: 0; transform: translateY(-8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .entry::before {
-    content: ''; position: absolute;
-    left: 0; top: 0; bottom: 0; width: 3px; z-index: 2;
-  }
+  @keyframes slide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .entry::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; z-index: 2; }
   .entry.win::before { background: #34d399; }
   .entry.loss::before { background: #f87171; }
   .entry.be::before { background: #666; }
 
-  .entry-main {
-    padding: 14px 16px; display: flex;
-    justify-content: space-between; align-items: center; gap: 12px;
-  }
+  .entry-main { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   .entry-left { flex: 1; min-width: 0; }
-  .entry-ticker {
-    font-size: 15px; font-weight: 600; margin-bottom: 2px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .rr-badge {
-    font-size: 10px; padding: 2px 7px;
-    border-radius: 6px; font-weight: 600;
-  }
+  .entry-ticker { font-size: 15px; font-weight: 600; margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
+  .rr-badge { font-size: 10px; padding: 2px 7px; border-radius: 6px; font-weight: 600; }
   .rr-badge.good { background: rgba(52,211,153,0.15); color: #34d399; }
   .rr-badge.mid { background: rgba(251,191,36,0.15); color: #fbbf24; }
   .rr-badge.bad { background: rgba(248,113,113,0.15); color: #f87171; }
-  .entry-note {
-    font-size: 12px; color: #666;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
+  .entry-note { font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .entry-date { font-size: 10px; color: #444; margin-top: 2px; }
-  .entry-right {
-    display: flex; align-items: center; gap: 12px; flex-shrink: 0;
-  }
-  .entry-pnl {
-    font-size: 16px; font-weight: 600; letter-spacing: -0.02em;
-  }
+  .entry-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .entry-pnl { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
   .entry-pnl.pos { color: #34d399; }
   .entry-pnl.neg { color: #f87171; }
   .entry-pnl.neu { color: #888; }
 
-  .del {
-    background: none; border: none; color: #444;
-    font-size: 20px; cursor: pointer; padding: 0 4px;
-    line-height: 1; transition: color 0.2s;
-  }
+  .del { background: none; border: none; color: #444; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; transition: color 0.2s; }
   .del:hover, .del:active { color: #f87171; }
 
-  .entry-shot {
-    width: 100%; max-height: 220px; object-fit: cover;
-    display: block; border-top: 1px solid #1e1e1e; cursor: pointer;
-  }
+  .entry-shot { width: 100%; max-height: 220px; object-fit: cover; display: block; border-top: 1px solid #1e1e1e; cursor: pointer; }
 
-  .filters {
-    display: flex; gap: 6px; margin-bottom: 16px;
-    overflow-x: auto; padding-bottom: 4px;
-    -webkit-overflow-scrolling: touch;
-  }
+  .filters { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
   .filters::-webkit-scrollbar { display: none; }
   .chip {
-    background: #141414; border: 1px solid #1e1e1e;
-    color: #888; padding: 8px 16px; border-radius: 20px;
-    font-size: 13px; font-family: inherit; cursor: pointer;
-    white-space: nowrap; transition: all 0.2s;
+    background: #141414; border: 1px solid #1e1e1e; color: #888;
+    padding: 8px 16px; border-radius: 20px; font-size: 13px;
+    font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.2s;
   }
-  .chip.active {
-    background: #e8e8e8; color: #0a0a0a; border-color: #e8e8e8;
-  }
+  .chip.active { background: #e8e8e8; color: #0a0a0a; border-color: #e8e8e8; }
 
-  .cal-header {
-    display: flex; justify-content: space-between;
-    align-items: center; margin-bottom: 16px;
-  }
-  .cal-month {
-    font-size: 18px; font-weight: 600;
-    letter-spacing: -0.02em; text-transform: capitalize;
-  }
+  .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .cal-month { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; text-transform: capitalize; }
   .cal-nav { display: flex; gap: 6px; }
   .cal-nav button {
-    background: #141414; border: 1px solid #1e1e1e;
-    color: #888; width: 36px; height: 36px;
-    border-radius: 10px; font-size: 16px;
+    background: #141414; border: 1px solid #1e1e1e; color: #888;
+    width: 36px; height: 36px; border-radius: 10px; font-size: 16px;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
   }
   .cal-nav button:active { background: #262626; color: #e8e8e8; }
 
-  .cal-weekdays {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    gap: 4px; margin-bottom: 6px;
-  }
-  .cal-weekdays div {
-    text-align: center; font-size: 10px; color: #555;
-    letter-spacing: 0.05em; text-transform: uppercase; padding: 6px 0;
-  }
+  .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
+  .cal-weekdays div { text-align: center; font-size: 10px; color: #555; letter-spacing: 0.05em; text-transform: uppercase; padding: 6px 0; }
 
-  .cal-grid {
-    display: grid; grid-template-columns: repeat(7, 1fr);
-    gap: 4px; margin-bottom: 20px;
-  }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 20px; }
   .cal-day {
-    aspect-ratio: 1; border-radius: 10px;
-    background: #0f0f0f; border: 1px solid #1a1a1a;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 3px; position: relative; overflow: hidden;
+    aspect-ratio: 1; border-radius: 10px; background: #0f0f0f;
+    border: 1px solid #1a1a1a; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 3px;
+    position: relative; overflow: hidden;
   }
   .cal-day.empty-day { background: transparent; border-color: transparent; }
   .cal-day.today { border-color: #666; }
-  .cal-day.profit {
-    background: rgba(52,211,153,0.12);
-    border-color: rgba(52,211,153,0.4);
-  }
-  .cal-day.loss {
-    background: rgba(248,113,113,0.12);
-    border-color: rgba(248,113,113,0.4);
-  }
+  .cal-day.profit { background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.4); }
+  .cal-day.loss { background: rgba(248,113,113,0.12); border-color: rgba(248,113,113,0.4); }
 
-  .cal-num {
-    font-size: 11px; color: #555; position: absolute;
-    top: 5px; left: 6px; font-weight: 500;
-  }
+  .cal-num { font-size: 11px; color: #555; position: absolute; top: 5px; left: 6px; font-weight: 500; }
   .cal-day.profit .cal-num { color: rgba(52,211,153,0.7); }
   .cal-day.loss .cal-num { color: rgba(248,113,113,0.7); }
 
-  .cal-pnl {
-    font-size: 9px; font-weight: 700; letter-spacing: -0.02em;
-    margin-top: 10px; line-height: 1.1; text-align: center;
-    padding: 0 2px; word-break: break-all;
-  }
+  .cal-pnl { font-size: 9px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; line-height: 1.1; text-align: center; padding: 0 2px; word-break: break-all; }
   .cal-day.profit .cal-pnl { color: #34d399; }
   .cal-day.loss .cal-pnl { color: #f87171; }
 
-  .cal-summary {
-    background: #141414; border: 1px solid #1e1e1e;
-    border-radius: 14px; padding: 16px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .cal-summary-label {
-    font-size: 12px; color: #666;
-    letter-spacing: 0.05em; text-transform: uppercase;
-  }
-  .cal-summary-value {
-    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
-  }
+  .cal-summary { background: #141414; border: 1px solid #1e1e1e; border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .cal-summary-label { font-size: 12px; color: #666; letter-spacing: 0.05em; text-transform: uppercase; }
+  .cal-summary-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
   .cal-summary-value.pos { color: #34d399; }
   .cal-summary-value.neg { color: #f87171; }
   .cal-summary-value.neu { color: #888; }
 
-  .cal-legend {
-    display: flex; gap: 16px; margin-top: 14px;
-    justify-content: center; font-size: 11px; color: #555;
-  }
+  .cal-legend { display: flex; gap: 16px; margin-top: 14px; justify-content: center; font-size: 11px; color: #555; }
   .cal-legend span { display: flex; align-items: center; gap: 6px; }
   .cal-dot { width: 10px; height: 10px; border-radius: 3px; }
   .cal-dot.g { background: rgba(52,211,153,0.5); border: 1px solid rgba(52,211,153,0.8); }
   .cal-dot.r { background: rgba(248,113,113,0.5); border: 1px solid rgba(248,113,113,0.8); }
 
-  .modal {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-    display: none; align-items: center; justify-content: center;
-    z-index: 100; padding: 20px;
-  }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
   .modal.on { display: flex; }
   .modal img { max-width: 100%; max-height: 100%; border-radius: 12px; }
 
-  /* Toast */
   .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
+    position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(100px);
-    background: #1e1e1e;
-    color: #e8e8e8;
-    padding: 14px 22px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 200;
-    transition: transform 0.3s ease;
-    border: 1px solid #333;
-    max-width: 90vw;
-    text-align: center;
+    background: #1e1e1e; color: #e8e8e8; padding: 14px 22px;
+    border-radius: 12px; font-size: 14px; font-weight: 500;
+    z-index: 200; transition: transform 0.3s ease; border: 1px solid #333;
+    max-width: 90vw; text-align: center;
   }
   .toast.on { transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: #34d399; color: #34d399; }
@@ -383,226 +223,193 @@
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <div class="brand-tag">Trading Log</div>
-      <h1>Izotov's Journal</h1>
-    </div>
-    <div class="date" id="today"></div>
-  </header>
+<header>
+  <div class="brand">
+    <div class="brand-tag">Trading Log</div>
+    <h1>Izotov's Journal</h1>
+  </div>
+  <div class="date" id="today"></div>
+</header>
 
-  <div class="tabs">
-    <button class="tab active" data-t="journal">Сделки</button>
-    <button class="tab" data-t="calendar">Календарь</button>
-    <button class="tab" data-t="calc">RR Кальк</button>
+<div class="sync" id="sync-status">
+  <span class="sync-dot"></span>
+  <span id="sync-text">Подключение к облаку...</span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-t="journal">Сделки</button>
+  <button class="tab" data-t="calendar">Календарь</button>
+  <button class="tab" data-t="calc">RR Кальк</button>
+</div>
+
+<div id="view-journal">
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Сделок</div><div class="stat-value neu" id="s-total">0</div></div>
+    <div class="stat"><div class="stat-label">Winrate</div><div class="stat-value neu" id="s-wr">0%</div></div>
+    <div class="stat"><div class="stat-label">P&L</div><div class="stat-value neu" id="s-pnl">$0</div></div>
+    <div class="stat"><div class="stat-label">Средний RR</div><div class="stat-value neu" id="s-avg-rr">—</div></div>
   </div>
 
-  <div id="view-journal">
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-label">Сделок</div>
-        <div class="stat-value neu" id="s-total">0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Winrate</div>
-        <div class="stat-value neu" id="s-wr">0%</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">P&L</div>
-        <div class="stat-value neu" id="s-pnl">$0</div>
-      </div>
-      <div class="stat">
-        <div class="stat-label">Средний RR</div>
-        <div class="stat-value neu" id="s-avg-rr">—</div>
+  <div class="form">
+    <div class="form-row">
+      <input type="text" id="in-ticker" placeholder="Тикер" maxlength="10">
+      <select id="in-result">
+        <option value="win">✅ Профит</option>
+        <option value="loss">❌ Убыток</option>
+        <option value="be">➖ Безубыток</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <div class="date-field" style="width:100%">
+        <label>Дата сделки</label>
+        <input type="date" id="in-date">
       </div>
     </div>
-
-    <div class="form">
-      <div class="form-row">
-        <input type="text" id="in-ticker" placeholder="Тикер" maxlength="10">
-        <select id="in-result">
-          <option value="win">✅ Профит</option>
-          <option value="loss">❌ Убыток</option>
-          <option value="be">➖ Безубыток</option>
-        </select>
-      </div>
-
-      <div class="form-row">
-        <div class="date-field" style="width:100%">
-          <label>Дата сделки</label>
-          <input type="date" id="in-date">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <input type="number" id="in-pnl" placeholder="P&L ($)" step="0.01">
-      </div>
-
-      <div class="rr-block">
-        <div class="rr-title">Risk / Reward</div>
-        <div class="rr-inputs">
-          <div class="rr-field">
-            <label>Вход</label>
-            <input type="number" id="rr-entry" step="0.01" inputmode="decimal">
-          </div>
-          <div class="rr-field">
-            <label>Стоп</label>
-            <input type="number" id="rr-stop" step="0.01" inputmode="decimal">
-          </div>
-          <div class="rr-field">
-            <label>Тейк</label>
-            <input type="number" id="rr-take" step="0.01" inputmode="decimal">
-          </div>
-        </div>
-        <div class="rr-result">
-          <span class="rr-label">Соотношение</span>
-          <span class="rr-value neutral" id="rr-value">—</span>
-        </div>
-      </div>
-
-      <label class="upload" id="upload-label">
-        <input type="file" id="in-shot" accept="image/*">
-        <div class="upload-text">📎 Прикрепить скриншот сделки</div>
-        <img class="upload-preview" id="upload-preview">
-      </label>
-
-      <div class="form-row">
-        <input type="text" id="in-note" placeholder="Заметка (необязательно)" maxlength="80">
-      </div>
-      <button class="btn" id="add">Добавить сделку</button>
+    <div class="form-row">
+      <input type="number" id="in-pnl" placeholder="P&L ($)" step="0.01">
     </div>
-
-    <div class="data-tools">
-      <button class="data-btn export" id="btn-export">📤 Экспорт данных</button>
-      <button class="data-btn import" id="btn-import">📥 Импорт данных</button>
-      <input type="file" id="import-file" accept=".json,application/json" style="display:none">
+    <div class="rr-block">
+      <div class="rr-title">Risk / Reward</div>
+      <div class="rr-inputs">
+        <div class="rr-field"><label>Вход</label><input type="number" id="rr-entry" step="0.01" inputmode="decimal"></div>
+        <div class="rr-field"><label>Стоп</label><input type="number" id="rr-stop" step="0.01" inputmode="decimal"></div>
+        <div class="rr-field"><label>Тейк</label><input type="number" id="rr-take" step="0.01" inputmode="decimal"></div>
+      </div>
+      <div class="rr-result">
+        <span class="rr-label">Соотношение</span>
+        <span class="rr-value neutral" id="rr-value">—</span>
+      </div>
     </div>
-
-    <div class="filters">
-      <button class="chip active" data-f="all">Все</button>
-      <button class="chip" data-f="win">Профит</button>
-      <button class="chip" data-f="loss">Убыток</button>
-      <button class="chip" data-f="be">Безубыток</button>
+    <label class="upload" id="upload-label">
+      <input type="file" id="in-shot" accept="image/*">
+      <div class="upload-text">📎 Прикрепить скриншот сделки</div>
+      <img class="upload-preview" id="upload-preview">
+    </label>
+    <div class="form-row">
+      <input type="text" id="in-note" placeholder="Заметка (необязательно)" maxlength="80">
     </div>
-
-    <div class="list" id="list"></div>
+    <button class="btn" id="add">Добавить сделку</button>
   </div>
 
-  <div id="view-calendar" style="display:none">
-    <div class="cal-header">
-      <div class="cal-month" id="cal-month">—</div>
-      <div class="cal-nav">
-        <button id="cal-prev">‹</button>
-        <button id="cal-next">›</button>
-      </div>
-    </div>
-
-    <div class="cal-weekdays">
-      <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
-    </div>
-
-    <div class="cal-grid" id="cal-grid"></div>
-
-    <div class="cal-summary">
-      <div class="cal-summary-label">Итого за месяц</div>
-      <div class="cal-summary-value neu" id="cal-total">$0</div>
-    </div>
-
-    <div class="cal-legend">
-      <span><div class="cal-dot g"></div> Профит</span>
-      <span><div class="cal-dot r"></div> Убыток</span>
-    </div>
+  <div class="data-tools">
+    <button class="data-btn export" id="btn-export">📤 Экспорт</button>
+    <button class="data-btn import" id="btn-import">📥 Импорт</button>
   </div>
 
-  <div id="view-calc" style="display:none">
-    <div class="form">
-      <div class="rr-block" style="margin-bottom:0">
-        <div class="rr-title">Калькулятор Risk / Reward</div>
-        <div class="rr-inputs">
-          <div class="rr-field">
-            <label>Вход</label>
-            <input type="number" id="c-entry" step="0.01" inputmode="decimal" placeholder="100">
-          </div>
-          <div class="rr-field">
-            <label>Стоп</label>
-            <input type="number" id="c-stop" step="0.01" inputmode="decimal" placeholder="95">
-          </div>
-          <div class="rr-field">
-            <label>Тейк</label>
-            <input type="number" id="c-take" step="0.01" inputmode="decimal" placeholder="115">
-          </div>
-        </div>
-        <div class="rr-result">
-          <span class="rr-label">R:R</span>
-          <span class="rr-value neutral" id="c-rr">—</span>
-        </div>
-      </div>
-    </div>
+  <div class="filters">
+    <button class="chip active" data-f="all">Все</button>
+    <button class="chip" data-f="win">Профит</button>
+    <button class="chip" data-f="loss">Убыток</button>
+    <button class="chip" data-f="be">Безубыток</button>
+  </div>
 
-    <div class="form">
-      <div class="rr-block" style="margin-bottom:0">
-        <div class="rr-title">Размер позиции</div>
-        <div class="rr-inputs" style="grid-template-columns: 1fr 1fr">
-          <div class="rr-field">
-            <label>Депозит ($)</label>
-            <input type="number" id="c-dep" step="0.01" inputmode="decimal" placeholder="1000">
-          </div>
-          <div class="rr-field">
-            <label>Риск (%)</label>
-            <input type="number" id="c-risk" step="0.1" inputmode="decimal" placeholder="1">
-          </div>
-        </div>
-        <div class="rr-result" style="margin-bottom:8px">
-          <span class="rr-label">Риск в $</span>
-          <span class="rr-value neutral" id="c-riskusd">—</span>
-        </div>
-        <div class="rr-result">
-          <span class="rr-label">Размер позиции</span>
-          <span class="rr-value neutral" id="c-size">—</span>
-        </div>
-      </div>
-    </div>
+  <div class="list" id="list"></div>
+</div>
 
-    <div class="form">
-      <div class="rr-block" style="margin-bottom:0">
-        <div class="rr-title">Прибыль по R:R</div>
-        <div class="rr-inputs" style="grid-template-columns: 1fr 1fr">
-          <div class="rr-field">
-            <label>Риск ($)</label>
-            <input type="number" id="c-rmoney" step="0.01" inputmode="decimal" placeholder="100">
-          </div>
-          <div class="rr-field">
-            <label>R:R</label>
-            <input type="number" id="c-rrnum" step="0.1" inputmode="decimal" placeholder="2">
-          </div>
-        </div>
-        <div class="rr-result">
-          <span class="rr-label">Профит</span>
-          <span class="rr-value pos" id="c-profit">—</span>
-        </div>
+<div id="view-calendar" style="display:none">
+  <div class="cal-header">
+    <div class="cal-month" id="cal-month">—</div>
+    <div class="cal-nav">
+      <button id="cal-prev">‹</button>
+      <button id="cal-next">›</button>
+    </div>
+  </div>
+  <div class="cal-weekdays">
+    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+  <div class="cal-summary">
+    <div class="cal-summary-label">Итого за месяц</div>
+    <div class="cal-summary-value neu" id="cal-total">$0</div>
+  </div>
+  <div class="cal-legend">
+    <span><div class="cal-dot g"></div> Профит</span>
+    <span><div class="cal-dot r"></div> Убыток</span>
+  </div>
+</div>
+
+<div id="view-calc" style="display:none">
+  <div class="form">
+    <div class="rr-block" style="margin-bottom:0">
+      <div class="rr-title">Калькулятор Risk / Reward</div>
+      <div class="rr-inputs">
+        <div class="rr-field"><label>Вход</label><input type="number" id="c-entry" step="0.01" inputmode="decimal" placeholder="100"></div>
+        <div class="rr-field"><label>Стоп</label><input type="number" id="c-stop" step="0.01" inputmode="decimal" placeholder="95"></div>
+        <div class="rr-field"><label>Тейк</label><input type="number" id="c-take" step="0.01" inputmode="decimal" placeholder="115"></div>
+      </div>
+      <div class="rr-result">
+        <span class="rr-label">R:R</span>
+        <span class="rr-value neutral" id="c-rr">—</span>
       </div>
     </div>
   </div>
-
-  <div class="modal" id="modal">
-    <img id="modal-img">
+  <div class="form">
+    <div class="rr-block" style="margin-bottom:0">
+      <div class="rr-title">Размер позиции</div>
+      <div class="rr-inputs" style="grid-template-columns: 1fr 1fr">
+        <div class="rr-field"><label>Депозит ($)</label><input type="number" id="c-dep" step="0.01" inputmode="decimal" placeholder="1000"></div>
+        <div class="rr-field"><label>Риск (%)</label><input type="number" id="c-risk" step="0.1" inputmode="decimal" placeholder="1"></div>
+      </div>
+      <div class="rr-result" style="margin-bottom:8px">
+        <span class="rr-label">Риск в $</span>
+        <span class="rr-value neutral" id="c-riskusd">—</span>
+      </div>
+      <div class="rr-result">
+        <span class="rr-label">Размер позиции</span>
+        <span class="rr-value neutral" id="c-size">—</span>
+      </div>
+    </div>
   </div>
+  <div class="form">
+    <div class="rr-block" style="margin-bottom:0">
+      <div class="rr-title">Прибыль по R:R</div>
+      <div class="rr-inputs" style="grid-template-columns: 1fr 1fr">
+        <div class="rr-field"><label>Риск ($)</label><input type="number" id="c-rmoney" step="0.01" inputmode="decimal" placeholder="100"></div>
+        <div class="rr-field"><label>R:R</label><input type="number" id="c-rrnum" step="0.1" inputmode="decimal" placeholder="2"></div>
+      </div>
+      <div class="rr-result">
+        <span class="rr-label">Профит</span>
+        <span class="rr-value pos" id="c-profit">—</span>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<div class="modal" id="modal"><img id="modal-img"></div>
+<div class="toast" id="toast"></div>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCgOEckc1xoTrJEdcRXGi_TsfsW-y02AcQ",
+    authDomain: "journal-ebc24.firebaseapp.com",
+    projectId: "journal-ebc24",
+    storageBucket: "journal-ebc24.firebasestorage.app",
+    messagingSenderId: "129678065280",
+    appId: "1:129678065280:web:16237ab65b3693399d7065"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const USER_ID = 'artemka';
+  const DOC_REF = doc(db, 'journals', USER_ID);
+
+  // ===== GLOBAL STATE =====
   const KEY = 'trade_journal_izotov_v2';
-  let entries = JSON.parse(localStorage.getItem(KEY) || '[]');
+  let entries = [];
   let filter = 'all';
   let currentShot = null;
   let calDate = new Date();
+  let saveTimer = null;
+  let suppressSync = false;
 
+  // ===== DATE =====
   const d = new Date();
   const days = ['вс','пн','вт','ср','чт','пт','сб'];
   const months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
-  document.getElementById('today').textContent =
-    `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
-
+  document.getElementById('today').textContent = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
   const todayStr = new Date().toISOString().split('T')[0];
   document.getElementById('in-date').value = todayStr;
 
@@ -612,6 +419,12 @@
     t.textContent = msg;
     t.className = 'toast on' + (type ? ' ' + type : '');
     setTimeout(() => { t.className = 'toast' + (type ? ' ' + type : ''); }, 3000);
+  }
+
+  function setSync(state, text) {
+    const el = document.getElementById('sync-status');
+    el.className = 'sync ' + state;
+    document.getElementById('sync-text').textContent = text;
   }
 
   // ===== RR =====
@@ -661,7 +474,6 @@
     const wins = entries.filter(e => e.result === 'win').length;
     const wr = total ? Math.round((wins / total) * 100) : 0;
     const pnl = entries.reduce((s, e) => s + (e.pnl || 0), 0);
-
     const rrs = entries.map(e => e.rr).filter(v => v !== null && v !== undefined && !isNaN(v));
     const avgRR = rrs.length ? (rrs.reduce((a, b) => a + b, 0) / rrs.length) : null;
 
@@ -674,17 +486,11 @@
     pnlEl.className = 'stat-value ' + (pnl > 0 ? 'pos' : pnl < 0 ? 'neg' : 'neu');
 
     const avgEl = document.getElementById('s-avg-rr');
-    if (avgRR === null) {
-      avgEl.textContent = '—';
-      avgEl.className = 'stat-value neu';
-    } else {
-      avgEl.textContent = avgRR.toFixed(2);
-      avgEl.className = 'stat-value ' + rrClass(avgRR);
-    }
+    if (avgRR === null) { avgEl.textContent = '—'; avgEl.className = 'stat-value neu'; }
+    else { avgEl.textContent = avgRR.toFixed(2); avgEl.className = 'stat-value ' + rrClass(avgRR); }
 
     const list = document.getElementById('list');
     const filtered = filter === 'all' ? entries : entries.filter(e => e.result === filter);
-
     if (!filtered.length) {
       list.innerHTML = '<div class="empty">Пока пусто. Добавь первую сделку ↑</div>';
       return;
@@ -736,8 +542,30 @@
   function esc(s) {
     return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   }
-  function save() { localStorage.setItem(KEY, JSON.stringify(entries)); }
 
+  // ===== SAVE (локально + облако) =====
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch(e) {}
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(pushToCloud, 800);
+  }
+
+  async function pushToCloud() {
+    if (suppressSync) return;
+    setSync('syncing', 'Сохранение...');
+    try {
+      await setDoc(DOC_REF, {
+        entries: entries,
+        updatedAt: Date.now()
+      });
+      setSync('online', 'Синхронизировано ✓');
+    } catch (err) {
+      console.error(err);
+      setSync('error', 'Ошибка синхронизации');
+    }
+  }
+
+  // ===== ADD =====
   document.getElementById('add').onclick = () => {
     const ticker = document.getElementById('in-ticker').value.trim().toUpperCase();
     const result = document.getElementById('in-result').value;
@@ -793,6 +621,7 @@
     };
   });
 
+  // ===== CALENDAR =====
   function renderCalendar() {
     const year = calDate.getFullYear();
     const month = calDate.getMonth();
@@ -838,9 +667,7 @@
         if (abs >= 1000) num = (abs/1000).toFixed(1) + 'k';
         else num = abs.toFixed(0);
         pnlText = sign + '$' + num;
-      } else if (has && val === 0) {
-        pnlText = '$0';
-      }
+      } else if (has && val === 0) pnlText = '$0';
 
       html += `<div class="${cls}">
         <span class="cal-num">${day}</span>
@@ -850,10 +677,8 @@
     grid.innerHTML = html;
 
     const totEl = document.getElementById('cal-total');
-    if (monthTotal === 0) {
-      totEl.textContent = '$0';
-      totEl.className = 'cal-summary-value neu';
-    } else {
+    if (monthTotal === 0) { totEl.textContent = '$0'; totEl.className = 'cal-summary-value neu'; }
+    else {
       const sign = monthTotal > 0 ? '+' : '−';
       totEl.textContent = sign + '$' + Math.abs(monthTotal).toFixed(2);
       totEl.className = 'cal-summary-value ' + (monthTotal > 0 ? 'pos' : 'neg');
@@ -863,6 +688,7 @@
   document.getElementById('cal-prev').onclick = () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); };
   document.getElementById('cal-next').onclick = () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); };
 
+  // ===== CALC TAB =====
   function calcTab() {
     const e = parseFloat(document.getElementById('c-entry').value);
     const s = parseFloat(document.getElementById('c-stop').value);
@@ -879,12 +705,8 @@
 
     if (riskUsd && e && s) {
       const stopDist = Math.abs(e - s);
-      if (stopDist > 0) {
-        document.getElementById('c-size').textContent = (riskUsd / stopDist).toFixed(2);
-      }
-    } else {
-      document.getElementById('c-size').textContent = '—';
-    }
+      if (stopDist > 0) document.getElementById('c-size').textContent = (riskUsd / stopDist).toFixed(2);
+    } else document.getElementById('c-size').textContent = '—';
 
     const rmoney = parseFloat(document.getElementById('c-rmoney').value);
     const rrnum = parseFloat(document.getElementById('c-rrnum').value);
@@ -901,74 +723,99 @@
 
   // ===== EXPORT / IMPORT =====
   document.getElementById('btn-export').onclick = () => {
-    if (!entries.length) {
-      showToast('Нет данных для экспорта', 'error');
-      return;
-    }
-    const data = {
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      count: entries.length,
-      entries: entries
-    };
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
+    if (!entries.length) { showToast('Нет данных для экспорта', 'error'); return; }
+    const data = { version: 1, exportedAt: new Date().toISOString(), count: entries.length, entries };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    const date = new Date().toISOString().split('T')[0];
     a.href = url;
-    a.download = `izotov-journal-${date}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    a.download = `izotov-journal-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     showToast(`Экспортировано ${entries.length} сделок ✓`, 'success');
   };
 
-  document.getElementById('btn-import').onclick = () => {
-    document.getElementById('import-file').click();
-  };
+  document.getElementById('btn-import').onclick = () => document.getElementById('import-file').click();
 
-  document.getElementById('import-file').addEventListener('change', (ev) => {
+  // создаём скрытый input
+  const importInput = document.createElement('input');
+  importInput.type = 'file';
+  importInput.accept = '.json,application/json';
+  importInput.style.display = 'none';
+  importInput.id = 'import-file';
+  document.body.appendChild(importInput);
+
+  importInput.addEventListener('change', (ev) => {
     const file = ev.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        let imported = [];
-        if (Array.isArray(data)) {
-          imported = data; // просто массив сделок
-        } else if (data && Array.isArray(data.entries)) {
-          imported = data.entries; // наш формат с обёрткой
-        } else {
-          throw new Error('Неверный формат');
-        }
-
-        if (!imported.length) {
-          showToast('Файл пустой', 'error');
-          return;
-        }
+        let imported = Array.isArray(data) ? data : (data.entries || []);
+        if (!imported.length) { showToast('Файл пустой', 'error'); return; }
 
         const ok = confirm(`Найдено ${imported.length} сделок.\n\nOK — добавить к текущим\nОтмена — заменить все`);
-        if (ok) {
-          entries = entries.concat(imported);
-          showToast(`Добавлено ${imported.length} сделок ✓`, 'success');
-        } else {
-          entries = imported;
-          showToast(`Загружено ${imported.length} сделок (замена) ✓`, 'success');
-        }
+        if (ok) { entries = entries.concat(imported); showToast(`Добавлено ${imported.length} ✓`, 'success'); }
+        else { entries = imported; showToast(`Загружено ${imported.length} (замена) ✓`, 'success'); }
         save(); render(); renderCalendar();
-      } catch (err) {
-        showToast('Ошибка: файл повреждён или неверный формат', 'error');
-      }
+      } catch (err) { showToast('Ошибка: неверный формат', 'error'); }
       ev.target.value = '';
     };
     reader.readAsText(file);
   });
 
-  render();
-  renderCalendar();
+  // ===== FIREBASE SYNC =====
+  (async () => {
+    try {
+      setSync('syncing', 'Подключение...');
+      const snap = await getDoc(DOC_REF);
+
+      if (snap.exists() && snap.data().entries) {
+        // В облаке есть данные — берём их
+        entries = snap.data().entries;
+        localStorage.setItem(KEY, JSON.stringify(entries));
+        setSync('online', 'Загружено из облака ✓');
+      } else {
+        // Облако пустое — берём локальные и заливаем
+        const local = JSON.parse(localStorage.getItem(KEY) || '[]');
+        if (local.length) {
+          entries = local;
+          await setDoc(DOC_REF, { entries, updatedAt: Date.now() });
+          setSync('online', 'Загружено локально, отправлено в облако ✓');
+        } else {
+          setSync('online', 'Облако пустое, начни добавлять сделки');
+        }
+      }
+
+      render(); renderCalendar();
+
+      // Подписка на изменения в реальном времени (если открыто на 2 устройствах)
+      onSnapshot(DOC_REF, (docSnap) => {
+        if (!docSnap.exists()) return;
+        const data = docSnap.data();
+        if (!data.entries) return;
+        // Если данные отличаются — обновляем
+        if (JSON.stringify(data.entries) !== JSON.stringify(entries)) {
+          suppressSync = true;
+          entries = data.entries;
+          localStorage.setItem(KEY, JSON.stringify(entries));
+          render(); renderCalendar();
+          setSync('online', 'Синхронизировано ✓');
+          setTimeout(() => { suppressSync = false; }, 500);
+        }
+      });
+    } catch (err) {
+      console.error(err);
+      setSync('error', 'Ошибка: ' + (err.message || 'нет связи'));
+      // Фолбэк на localStorage
+      entries = JSON.parse(localStorage.getItem(KEY) || '[]');
+      render(); renderCalendar();
+    }
+  })();
+
+  // Первичный рендер
+  render(); renderCalendar();
 </script>
 </body>
 </html>
