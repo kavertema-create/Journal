@@ -6,24 +6,145 @@
 <title>Izotov's Journal</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow-x: hidden; }
   body {
     min-height: 100vh; background: #0a0a0a; color: #e8e8e8;
     font-family: -apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif;
     padding: 24px 20px 100px; -webkit-font-smoothing: antialiased;
+    position: relative;
   }
+
+  /* ===== Анимированный фон ===== */
+  .bg-waves {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0.5;
+    transition: opacity 0.8s;
+  }
+  .bg-waves.positive { opacity: 0.6; }
+  .bg-waves.negative { opacity: 0.55; }
+
+  .wave {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    animation: floatWave 20s ease-in-out infinite;
+  }
+  .wave1 {
+    width: 500px; height: 500px;
+    top: -200px; left: -150px;
+    background: var(--wave-color, #34d399);
+    opacity: 0.35;
+  }
+  .wave2 {
+    width: 450px; height: 450px;
+    bottom: -150px; right: -100px;
+    background: var(--wave-color2, #65a30d);
+    opacity: 0.3;
+    animation-delay: -10s;
+  }
+  .wave3 {
+    width: 350px; height: 350px;
+    top: 40%; left: 30%;
+    background: var(--wave-color, #34d399);
+    opacity: 0.15;
+    animation-delay: -5s;
+  }
+  @keyframes floatWave {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.1); }
+    66% { transform: translate(-30px, 40px) scale(0.95); }
+  }
+
+  .content { position: relative; z-index: 1; }
+
   header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
   .brand { display: flex; flex-direction: column; gap: 2px; }
   .brand-tag { font-size: 9px; color: #555; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 600; }
   h1 {
-    font-size: 28px; font-weight: 600; letter-spacing: -0.04em;
+    font-size: 26px; font-weight: 600; letter-spacing: -0.04em;
     background: linear-gradient(135deg, #fff, #888);
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
   .date { font-size: 12px; color: #555; padding-top: 4px; }
 
+  /* ===== Приветствие ===== */
+  .greeting {
+    margin-bottom: 20px;
+    padding: 4px 0;
+  }
+  .greeting-line1 {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 2px;
+    letter-spacing: 0.02em;
+  }
+  .greeting-line2 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #e8e8e8;
+    letter-spacing: -0.02em;
+  }
+
+  /* ===== Большая цифра P&L ===== */
+  .big-pnl {
+    background: rgba(20,20,20,0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e;
+    border-radius: 22px;
+    padding: 26px 22px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.5s;
+  }
+  .big-pnl.pos { border-color: rgba(52,211,153,0.3); }
+  .big-pnl.neg { border-color: rgba(248,113,113,0.3); }
+
+  .big-pnl-label {
+    font-size: 11px;
+    color: #666;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .big-pnl-value {
+    font-size: clamp(42px, 12vw, 64px);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 14px;
+    transition: color 0.4s;
+    font-variant-numeric: tabular-nums;
+  }
+  .big-pnl-value.pos {
+    color: #34d399;
+    text-shadow: 0 0 40px rgba(52,211,153,0.3);
+  }
+  .big-pnl-value.neg {
+    color: #f87171;
+    text-shadow: 0 0 40px rgba(248,113,113,0.3);
+  }
+  .big-pnl-value.neu { color: #666; }
+
+  .big-pnl-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: #666;
+    flex-wrap: wrap;
+  }
+  .big-pnl-meta b { color: #aab8cc; font-weight: 600; }
+
   .sync {
     display: flex; align-items: center; gap: 8px;
-    background: #141414; border: 1px solid #1e1e1e;
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e;
     border-radius: 10px; padding: 8px 14px;
     font-size: 12px; color: #666; margin-bottom: 16px;
   }
@@ -37,7 +158,8 @@
 
   .tabs {
     display: flex; gap: 6px; margin-bottom: 24px;
-    background: #141414; padding: 5px; border-radius: 12px; border: 1px solid #1e1e1e;
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    padding: 5px; border-radius: 12px; border: 1px solid #1e1e1e;
   }
   .tab {
     flex: 1; background: none; border: none; color: #666;
@@ -47,7 +169,7 @@
   .tab.active { background: #262626; color: #e8e8e8; }
 
   .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
-  .stat { background: #141414; border-radius: 14px; padding: 16px 14px; border: 1px solid #1e1e1e; }
+  .stat { background: rgba(20,20,20,0.6); backdrop-filter: blur(20px); border-radius: 14px; padding: 16px 14px; border: 1px solid #1e1e1e; }
   .stat-label { font-size: 10px; color: #666; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
   .stat-value { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
   .stat-value.pos { color: #34d399; }
@@ -57,7 +179,7 @@
   .stat-value.mid { color: #fbbf24; }
   .stat-value.bad { color: #f87171; }
 
-  .form { background: #141414; border: 1px solid #1e1e1e; border-radius: 18px; padding: 18px; margin-bottom: 20px; }
+  .form { background: rgba(20,20,20,0.6); backdrop-filter: blur(20px); border: 1px solid #1e1e1e; border-radius: 18px; padding: 18px; margin-bottom: 20px; }
   .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
   input, select {
     background: #0a0a0a; border: 1px solid #262626; border-radius: 10px;
@@ -107,7 +229,8 @@
 
   .data-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
   .data-btn {
-    background: #141414; border: 1px solid #1e1e1e; color: #aab8cc;
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e; color: #aab8cc;
     padding: 12px; border-radius: 12px; font-size: 13px; font-family: inherit;
     font-weight: 500; cursor: pointer; transition: all 0.2s;
     display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -120,7 +243,8 @@
   .empty { text-align: center; color: #444; font-size: 14px; padding: 40px 0; }
 
   .entry {
-    background: #141414; border: 1px solid #1e1e1e; border-radius: 14px;
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e; border-radius: 14px;
     overflow: hidden; animation: slide 0.3s ease; position: relative;
   }
   @keyframes slide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
@@ -152,7 +276,8 @@
   .filters { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
   .filters::-webkit-scrollbar { display: none; }
   .chip {
-    background: #141414; border: 1px solid #1e1e1e; color: #888;
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e; color: #888;
     padding: 8px 16px; border-radius: 20px; font-size: 13px;
     font-family: inherit; cursor: pointer; white-space: nowrap; transition: all 0.2s;
   }
@@ -162,7 +287,8 @@
   .cal-month { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; text-transform: capitalize; }
   .cal-nav { display: flex; gap: 6px; }
   .cal-nav button {
-    background: #141414; border: 1px solid #1e1e1e; color: #888;
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e; color: #888;
     width: 36px; height: 36px; border-radius: 10px; font-size: 16px;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
   }
@@ -173,7 +299,7 @@
 
   .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 20px; }
   .cal-day {
-    aspect-ratio: 1; border-radius: 10px; background: #0f0f0f;
+    aspect-ratio: 1; border-radius: 10px; background: rgba(15,15,15,0.6);
     border: 1px solid #1a1a1a; display: flex; flex-direction: column;
     align-items: center; justify-content: center; padding: 3px;
     position: relative; overflow: hidden;
@@ -191,7 +317,7 @@
   .cal-day.profit .cal-pnl { color: #34d399; }
   .cal-day.loss .cal-pnl { color: #f87171; }
 
-  .cal-summary { background: #141414; border: 1px solid #1e1e1e; border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .cal-summary { background: rgba(20,20,20,0.6); backdrop-filter: blur(20px); border: 1px solid #1e1e1e; border-radius: 14px; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
   .cal-summary-label { font-size: 12px; color: #666; letter-spacing: 0.05em; text-transform: uppercase; }
   .cal-summary-value { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
   .cal-summary-value.pos { color: #34d399; }
@@ -223,6 +349,15 @@
 </head>
 <body>
 
+<!-- Анимированный фон -->
+<div class="bg-waves" id="bg-waves">
+  <div class="wave wave1"></div>
+  <div class="wave wave2"></div>
+  <div class="wave wave3"></div>
+</div>
+
+<div class="content">
+
 <header>
   <div class="brand">
     <div class="brand-tag">Trading Log</div>
@@ -230,6 +365,23 @@
   </div>
   <div class="date" id="today"></div>
 </header>
+
+<!-- Приветствие по времени -->
+<div class="greeting">
+  <div class="greeting-line1">Trading Log</div>
+  <div class="greeting-line2" id="greeting-name">Доброе утро, Артём</div>
+</div>
+
+<!-- Большая цифра P&L -->
+<div class="big-pnl" id="big-pnl-box">
+  <div class="big-pnl-label">Общий P&L</div>
+  <div class="big-pnl-value neu" id="big-pnl-value">$0</div>
+  <div class="big-pnl-meta">
+    <span>Winrate: <b id="big-wr">0%</b></span>
+    <span>Сделок: <b id="big-total">0</b></span>
+    <span>Ср. RR: <b id="big-rr">—</b></span>
+  </div>
+</div>
 
 <div class="sync" id="sync-status">
   <span class="sync-dot"></span>
@@ -378,6 +530,8 @@
 <div class="modal" id="modal"><img id="modal-img"></div>
 <div class="toast" id="toast"></div>
 
+</div><!-- .content -->
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -396,7 +550,6 @@
   const USER_ID = 'artemka';
   const DOC_REF = doc(db, 'journals', USER_ID);
 
-  // ===== GLOBAL STATE =====
   const KEY = 'trade_journal_izotov_v2';
   let entries = [];
   let filter = 'all';
@@ -405,7 +558,20 @@
   let saveTimer = null;
   let suppressSync = false;
 
-  // ===== DATE =====
+  // ===== ПРИВЕТСТВИЕ ПО ВРЕМЕНИ =====
+  function setGreeting() {
+    const h = new Date().getHours();
+    let g;
+    if (h >= 5 && h < 12) g = 'Доброе утро, Артём';
+    else if (h >= 12 && h < 18) g = 'Хорошего дня, Артём';
+    else if (h >= 18 && h < 23) g = 'Добрый вечер, Артём';
+    else g = 'Тихой ночи, Артём';
+    document.getElementById('greeting-name').textContent = g;
+  }
+  setGreeting();
+  setInterval(setGreeting, 60000);
+
+  // ===== ДАТА =====
   const d = new Date();
   const days = ['вс','пн','вт','ср','чт','пт','сб'];
   const months = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
@@ -468,6 +634,25 @@
     reader.readAsDataURL(file);
   });
 
+  // ===== BACKGROUND WAVES =====
+  function updateWaves(pnl) {
+    const el = document.getElementById('bg-waves');
+    const root = document.documentElement;
+    if (pnl > 0) {
+      root.style.setProperty('--wave-color', '#34d399');
+      root.style.setProperty('--wave-color2', '#65a30d');
+      el.className = 'bg-waves positive';
+    } else if (pnl < 0) {
+      root.style.setProperty('--wave-color', '#f87171');
+      root.style.setProperty('--wave-color2', '#b91c1c');
+      el.className = 'bg-waves negative';
+    } else {
+      root.style.setProperty('--wave-color', '#666');
+      root.style.setProperty('--wave-color2', '#444');
+      el.className = 'bg-waves';
+    }
+  }
+
   // ===== RENDER =====
   function render() {
     const total = entries.length;
@@ -477,6 +662,29 @@
     const rrs = entries.map(e => e.rr).filter(v => v !== null && v !== undefined && !isNaN(v));
     const avgRR = rrs.length ? (rrs.reduce((a, b) => a + b, 0) / rrs.length) : null;
 
+    // Большая цифра
+    const bigVal = document.getElementById('big-pnl-value');
+    if (pnl === 0) {
+      bigVal.textContent = '$0';
+      bigVal.className = 'big-pnl-value neu';
+    } else {
+      const sign = pnl > 0 ? '+' : '−';
+      bigVal.textContent = sign + '$' + Math.abs(pnl).toFixed(0);
+      bigVal.className = 'big-pnl-value ' + (pnl > 0 ? 'pos' : 'neg');
+    }
+
+    document.getElementById('big-wr').textContent = wr + '%';
+    document.getElementById('big-total').textContent = total;
+    document.getElementById('big-rr').textContent = avgRR === null ? '—' : avgRR.toFixed(2);
+
+    const box = document.getElementById('big-pnl-box');
+    if (pnl > 0) box.className = 'big-pnl pos';
+    else if (pnl < 0) box.className = 'big-pnl neg';
+    else box.className = 'big-pnl';
+
+    updateWaves(pnl);
+
+    // Статистика
     document.getElementById('s-total').textContent = total;
     document.getElementById('s-wr').textContent = wr + '%';
     document.getElementById('s-wr').className = 'stat-value ' + (wr >= 50 ? 'pos' : total ? 'neg' : 'neu');
@@ -543,7 +751,6 @@
     return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   }
 
-  // ===== SAVE (локально + облако) =====
   function save() {
     try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch(e) {}
     clearTimeout(saveTimer);
@@ -554,18 +761,14 @@
     if (suppressSync) return;
     setSync('syncing', 'Сохранение...');
     try {
-      await setDoc(DOC_REF, {
-        entries: entries,
-        updatedAt: Date.now()
-      });
-      setSync('online', 'Синхронизировано ✓');
+      await setDoc(DOC_REF, { entries: entries, updatedAt: Date.now() });
+      setSync('online', 'Синхронизировано');
     } catch (err) {
       console.error(err);
       setSync('error', 'Ошибка синхронизации');
     }
   }
 
-  // ===== ADD =====
   document.getElementById('add').onclick = () => {
     const ticker = document.getElementById('in-ticker').value.trim().toUpperCase();
     const result = document.getElementById('in-result').value;
@@ -621,7 +824,6 @@
     };
   });
 
-  // ===== CALENDAR =====
   function renderCalendar() {
     const year = calDate.getFullYear();
     const month = calDate.getMonth();
@@ -688,7 +890,6 @@
   document.getElementById('cal-prev').onclick = () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); };
   document.getElementById('cal-next').onclick = () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); };
 
-  // ===== CALC TAB =====
   function calcTab() {
     const e = parseFloat(document.getElementById('c-entry').value);
     const s = parseFloat(document.getElementById('c-stop').value);
@@ -732,12 +933,11 @@
     a.download = `izotov-journal-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    showToast(`Экспортировано ${entries.length} сделок ✓`, 'success');
+    showToast(`Экспортировано ${entries.length} сделок`, 'success');
   };
 
   document.getElementById('btn-import').onclick = () => document.getElementById('import-file').click();
 
-  // создаём скрытый input
   const importInput = document.createElement('input');
   importInput.type = 'file';
   importInput.accept = '.json,application/json';
@@ -756,8 +956,8 @@
         if (!imported.length) { showToast('Файл пустой', 'error'); return; }
 
         const ok = confirm(`Найдено ${imported.length} сделок.\n\nOK — добавить к текущим\nОтмена — заменить все`);
-        if (ok) { entries = entries.concat(imported); showToast(`Добавлено ${imported.length} ✓`, 'success'); }
-        else { entries = imported; showToast(`Загружено ${imported.length} (замена) ✓`, 'success'); }
+        if (ok) { entries = entries.concat(imported); showToast(`Добавлено ${imported.length}`, 'success'); }
+        else { entries = imported; showToast(`Загружено ${imported.length} (замена)`, 'success'); }
         save(); render(); renderCalendar();
       } catch (err) { showToast('Ошибка: неверный формат', 'error'); }
       ev.target.value = '';
@@ -772,49 +972,43 @@
       const snap = await getDoc(DOC_REF);
 
       if (snap.exists() && snap.data().entries) {
-        // В облаке есть данные — берём их
         entries = snap.data().entries;
         localStorage.setItem(KEY, JSON.stringify(entries));
-        setSync('online', 'Загружено из облака ✓');
+        setSync('online', 'Загружено из облака');
       } else {
-        // Облако пустое — берём локальные и заливаем
         const local = JSON.parse(localStorage.getItem(KEY) || '[]');
         if (local.length) {
           entries = local;
           await setDoc(DOC_REF, { entries, updatedAt: Date.now() });
-          setSync('online', 'Загружено локально, отправлено в облако ✓');
+          setSync('online', 'Синхронизировано');
         } else {
-          setSync('online', 'Облако пустое, начни добавлять сделки');
+          setSync('online', 'Облако пустое');
         }
       }
 
       render(); renderCalendar();
 
-      // Подписка на изменения в реальном времени (если открыто на 2 устройствах)
       onSnapshot(DOC_REF, (docSnap) => {
         if (!docSnap.exists()) return;
         const data = docSnap.data();
         if (!data.entries) return;
-        // Если данные отличаются — обновляем
         if (JSON.stringify(data.entries) !== JSON.stringify(entries)) {
           suppressSync = true;
           entries = data.entries;
           localStorage.setItem(KEY, JSON.stringify(entries));
           render(); renderCalendar();
-          setSync('online', 'Синхронизировано ✓');
+          setSync('online', 'Синхронизировано');
           setTimeout(() => { suppressSync = false; }, 500);
         }
       });
     } catch (err) {
       console.error(err);
       setSync('error', 'Ошибка: ' + (err.message || 'нет связи'));
-      // Фолбэк на localStorage
       entries = JSON.parse(localStorage.getItem(KEY) || '[]');
       render(); renderCalendar();
     }
   })();
 
-  // Первичный рендер
   render(); renderCalendar();
 </script>
 </body>
