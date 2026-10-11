@@ -2,7 +2,9 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,<initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Izotov's Journal</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -14,45 +16,16 @@
     position: relative;
   }
 
-  /* ===== Анимированный фон ===== */
   .bg-waves {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    overflow: hidden;
-    pointer-events: none;
-    opacity: 0.5;
-    transition: opacity 0.8s;
+    position: fixed; inset: 0; z-index: 0; overflow: hidden;
+    pointer-events: none; opacity: 0.5; transition: opacity 0.8s;
   }
   .bg-waves.positive { opacity: 0.6; }
   .bg-waves.negative { opacity: 0.55; }
-
-  .wave {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    animation: floatWave 20s ease-in-out infinite;
-  }
-  .wave1 {
-    width: 500px; height: 500px;
-    top: -200px; left: -150px;
-    background: var(--wave-color, #34d399);
-    opacity: 0.35;
-  }
-  .wave2 {
-    width: 450px; height: 450px;
-    bottom: -150px; right: -100px;
-    background: var(--wave-color2, #65a30d);
-    opacity: 0.3;
-    animation-delay: -10s;
-  }
-  .wave3 {
-    width: 350px; height: 350px;
-    top: 40%; left: 30%;
-    background: var(--wave-color, #34d399);
-    opacity: 0.15;
-    animation-delay: -5s;
-  }
+  .wave { position: absolute; border-radius: 50%; filter: blur(80px); animation: floatWave 20s ease-in-out infinite; }
+  .wave1 { width: 500px; height: 500px; top: -200px; left: -150px; background: var(--wave-color, #34d399); opacity: 0.35; }
+  .wave2 { width: 450px; height: 450px; bottom: -150px; right: -100px; background: var(--wave-color2, #65a30d); opacity: 0.3; animation-delay: -10s; }
+  .wave3 { width: 350px; height: 350px; top: 40%; left: 30%; background: var(--wave-color, #34d399); opacity: 0.15; animation-delay: -5s; }
   @keyframes floatWave {
     0%, 100% { transform: translate(0, 0) scale(1); }
     33% { transform: translate(40px, -30px) scale(1.1); }
@@ -61,92 +34,57 @@
 
   .content { position: relative; z-index: 1; }
 
-  header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-  .brand { display: flex; flex-direction: column; gap: 2px; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; gap: 12px; }
+  .brand { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
   .brand-tag { font-size: 9px; color: #555; letter-spacing: 0.25em; text-transform: uppercase; font-weight: 600; }
   h1 {
     font-size: 26px; font-weight: 600; letter-spacing: -0.04em;
     background: linear-gradient(135deg, #fff, #888);
     -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   }
-  .date { font-size: 12px; color: #555; padding-top: 4px; }
 
-  /* ===== Приветствие ===== */
-  .greeting {
-    margin-bottom: 20px;
-    padding: 4px 0;
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .date { font-size: 12px; color: #555; }
+  .auth-btn {
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e; color: #888;
+    padding: 6px 12px; border-radius: 8px;
+    font-size: 11px; font-family: inherit; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
   }
-  .greeting-line1 {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 2px;
-    letter-spacing: 0.02em;
-  }
-  .greeting-line2 {
-    font-size: 18px;
-    font-weight: 500;
-    color: #e8e8e8;
-    letter-spacing: -0.02em;
-  }
+  .auth-btn:active { transform: scale(0.95); }
+  .auth-btn.editor { color: #34d399; border-color: rgba(52,211,153,0.4); }
+  .auth-btn.viewer { color: #fbbf24; border-color: rgba(251,191,36,0.4); }
 
-  /* ===== Большая цифра P&L ===== */
+  .greeting { margin-bottom: 20px; padding: 4px 0; }
+  .greeting-line1 { font-size: 13px; color: #666; margin-bottom: 2px; letter-spacing: 0.02em; }
+  .greeting-line2 { font-size: 18px; font-weight: 500; color: #e8e8e8; letter-spacing: -0.02em; }
+
   .big-pnl {
-    background: rgba(20,20,20,0.6);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid #1e1e1e;
-    border-radius: 22px;
-    padding: 26px 22px;
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.5s;
+    background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
+    border: 1px solid #1e1e1e; border-radius: 22px;
+    padding: 26px 22px; margin-bottom: 20px;
+    position: relative; overflow: hidden; transition: border-color 0.5s;
   }
   .big-pnl.pos { border-color: rgba(52,211,153,0.3); }
   .big-pnl.neg { border-color: rgba(248,113,113,0.3); }
-
-  .big-pnl-label {
-    font-size: 11px;
-    color: #666;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    font-weight: 500;
-  }
+  .big-pnl-label { font-size: 11px; color: #666; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
   .big-pnl-value {
-    font-size: clamp(42px, 12vw, 64px);
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    line-height: 1;
-    margin-bottom: 14px;
-    transition: color 0.4s;
-    font-variant-numeric: tabular-nums;
+    font-size: clamp(42px, 12vw, 64px); font-weight: 700;
+    letter-spacing: -0.04em; line-height: 1; margin-bottom: 14px;
+    transition: color 0.4s; font-variant-numeric: tabular-nums;
   }
-  .big-pnl-value.pos {
-    color: #34d399;
-    text-shadow: 0 0 40px rgba(52,211,153,0.3);
-  }
-  .big-pnl-value.neg {
-    color: #f87171;
-    text-shadow: 0 0 40px rgba(248,113,113,0.3);
-  }
+  .big-pnl-value.pos { color: #34d399; text-shadow: 0 0 40px rgba(52,211,153,0.3); }
+  .big-pnl-value.neg { color: #f87171; text-shadow: 0 0 40px rgba(248,113,113,0.3); }
   .big-pnl-value.neu { color: #666; }
-
-  .big-pnl-meta {
-    display: flex;
-    gap: 20px;
-    font-size: 12px;
-    color: #666;
-    flex-wrap: wrap;
-  }
+  .big-pnl-meta { display: flex; gap: 20px; font-size: 12px; color: #666; flex-wrap: wrap; }
   .big-pnl-meta b { color: #aab8cc; font-weight: 600; }
 
   .sync {
     display: flex; align-items: center; gap: 8px;
     background: rgba(20,20,20,0.6); backdrop-filter: blur(20px);
-    border: 1px solid #1e1e1e;
-    border-radius: 10px; padding: 8px 14px;
-    font-size: 12px; color: #666; margin-bottom: 16px;
+    border: 1px solid #1e1e1e; border-radius: 10px;
+    padding: 8px 14px; font-size: 12px; color: #666; margin-bottom: 16px;
   }
   .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #666; transition: background 0.3s; }
   .sync.online .sync-dot { background: #34d399; box-shadow: 0 0 8px #34d399; }
@@ -181,18 +119,33 @@
 
   .form { background: rgba(20,20,20,0.6); backdrop-filter: blur(20px); border: 1px solid #1e1e1e; border-radius: 18px; padding: 18px; margin-bottom: 20px; }
   .form-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .form-row > * { flex: 1; min-width: 0; }
+
   input, select {
     background: #0a0a0a; border: 1px solid #262626; border-radius: 10px;
     padding: 12px 14px; color: #e8e8e8; font-size: 15px;
-    font-family: inherit; outline: none; transition: border 0.2s; width: 100%;
+    font-family: inherit; outline: none; transition: border 0.2s;
+    width: 100%; max-width: 100%; min-width: 0;
+    -webkit-appearance: none; appearance: none;
   }
   input:focus, select:focus { border-color: #404040; }
   input::placeholder { color: #444; }
-  select { cursor: pointer; }
+  select { cursor: pointer; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='%23888' d='M6 9L1 4h10z'/></svg>"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
 
-  .date-field { display: flex; flex-direction: column; }
+  .date-field { display: flex; flex-direction: column; width: 100%; }
   .date-field label { font-size: 10px; color: #555; margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
-  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; cursor: pointer; }
+  input[type="date"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; max-width: 100%;
+    text-align: left;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); opacity: 0.4; cursor: pointer;
+    padding: 0; margin-left: 8px;
+  }
 
   .rr-block { background: #0a0a0a; border: 1px solid #262626; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
   .rr-title { font-size: 11px; color: #666; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
@@ -339,17 +292,55 @@
     transform: translateX(-50%) translateY(100px);
     background: #1e1e1e; color: #e8e8e8; padding: 14px 22px;
     border-radius: 12px; font-size: 14px; font-weight: 500;
-    z-index: 200; transition: transform 0.3s ease; border: 1px solid #333;
+    z-index: 400; transition: transform 0.3s ease; border: 1px solid #333;
     max-width: 90vw; text-align: center;
   }
   .toast.on { transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: #34d399; color: #34d399; }
   .toast.error { border-color: #f87171; color: #f87171; }
+
+  /* Модалка пароля */
+  .pwd-modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 300; padding: 20px;
+  }
+  .pwd-modal.on { display: flex; }
+  .pwd-box {
+    background: #141414; border: 1px solid #262626;
+    border-radius: 20px; padding: 28px 24px;
+    max-width: 380px; width: 100%; text-align: center;
+    animation: popIn 0.3s ease;
+  }
+  @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  .pwd-icon { font-size: 36px; margin-bottom: 12px; }
+  .pwd-title { font-size: 20px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.02em; }
+  .pwd-sub { font-size: 13px; color: #666; margin-bottom: 20px; }
+  .pwd-input {
+    background: #0a0a0a; border: 1px solid #262626; border-radius: 12px;
+    padding: 16px; color: #e8e8e8; font-size: 24px;
+    font-family: inherit; outline: none; width: 100%;
+    text-align: center; letter-spacing: 0.4em;
+    transition: border 0.2s; margin-bottom: 12px;
+  }
+  .pwd-input:focus { border-color: #34d399; }
+  .pwd-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pwd-btn {
+    padding: 14px; border-radius: 12px; font-size: 15px;
+    font-weight: 600; font-family: inherit; cursor: pointer;
+    transition: all 0.2s; border: none;
+  }
+  .pwd-btn.primary { background: #e8e8e8; color: #0a0a0a; }
+  .pwd-btn.secondary { background: #1e1e1e; color: #e8e8e8; }
+  .pwd-btn:active { transform: scale(0.97); }
+
+  /* Скрытие элементов для зрителей */
+  .hide-viewer { display: none !important; }
 </style>
 </head>
 <body>
 
-<!-- Анимированный фон -->
 <div class="bg-waves" id="bg-waves">
   <div class="wave wave1"></div>
   <div class="wave wave2"></div>
@@ -363,16 +354,17 @@
     <div class="brand-tag">Trading Log</div>
     <h1>Izotov's Journal</h1>
   </div>
-  <div class="date" id="today"></div>
+  <div class="header-right">
+    <div class="date" id="today"></div>
+    <button class="auth-btn viewer" id="auth-btn">Войти</button>
+  </div>
 </header>
 
-<!-- Приветствие по времени -->
 <div class="greeting">
   <div class="greeting-line1">Trading Log</div>
   <div class="greeting-line2" id="greeting-name">Доброе утро, Артём</div>
 </div>
 
-<!-- Большая цифра P&L -->
 <div class="big-pnl" id="big-pnl-box">
   <div class="big-pnl-label">Общий P&L</div>
   <div class="big-pnl-value neu" id="big-pnl-value">$0</div>
@@ -402,17 +394,17 @@
     <div class="stat"><div class="stat-label">Средний RR</div><div class="stat-value neu" id="s-avg-rr">—</div></div>
   </div>
 
-  <div class="form">
+  <div class="form hide-viewer" id="form-block">
     <div class="form-row">
       <input type="text" id="in-ticker" placeholder="Тикер" maxlength="10">
       <select id="in-result">
-        <option value="win">✅ Профит</option>
-        <option value="loss">❌ Убыток</option>
-        <option value="be">➖ Безубыток</option>
+        <option value="win">Профит</option>
+        <option value="loss">Убыток</option>
+        <option value="be">Безубыток</option>
       </select>
     </div>
     <div class="form-row">
-      <div class="date-field" style="width:100%">
+      <div class="date-field">
         <label>Дата сделки</label>
         <input type="date" id="in-date">
       </div>
@@ -434,7 +426,7 @@
     </div>
     <label class="upload" id="upload-label">
       <input type="file" id="in-shot" accept="image/*">
-      <div class="upload-text">📎 Прикрепить скриншот сделки</div>
+      <div class="upload-text">Прикрепить скриншот сделки</div>
       <img class="upload-preview" id="upload-preview">
     </label>
     <div class="form-row">
@@ -443,9 +435,9 @@
     <button class="btn" id="add">Добавить сделку</button>
   </div>
 
-  <div class="data-tools">
-    <button class="data-btn export" id="btn-export">📤 Экспорт</button>
-    <button class="data-btn import" id="btn-import">📥 Импорт</button>
+  <div class="data-tools hide-viewer" id="data-tools">
+    <button class="data-btn export" id="btn-export">Экспорт</button>
+    <button class="data-btn import" id="btn-import">Импорт</button>
   </div>
 
   <div class="filters">
@@ -530,6 +522,19 @@
 <div class="modal" id="modal"><img id="modal-img"></div>
 <div class="toast" id="toast"></div>
 
+<div class="pwd-modal" id="pwd-modal">
+  <div class="pwd-box">
+    <div class="pwd-icon">🔒</div>
+    <div class="pwd-title">Вход в режим редактирования</div>
+    <div class="pwd-sub">Введи код, чтобы добавлять и удалять сделки</div>
+    <input type="tel" class="pwd-input" id="pwd-input" placeholder="····" maxlength="8" inputmode="numeric">
+    <div class="pwd-btns">
+      <button class="pwd-btn secondary" id="pwd-cancel">Отмена</button>
+      <button class="pwd-btn primary" id="pwd-ok">Войти</button>
+    </div>
+  </div>
+</div>
+
 </div><!-- .content -->
 
 <script type="module">
@@ -550,6 +555,9 @@
   const USER_ID = 'artemka';
   const DOC_REF = doc(db, 'journals', USER_ID);
 
+  const PASSWORD = '2773';
+  const AUTH_KEY = 'journal_auth';
+
   const KEY = 'trade_journal_izotov_v2';
   let entries = [];
   let filter = 'all';
@@ -557,6 +565,77 @@
   let calDate = new Date();
   let saveTimer = null;
   let suppressSync = false;
+  let isEditor = false;
+
+  // ===== AUTH =====
+  function checkAuth() {
+    isEditor = localStorage.getItem(AUTH_KEY) === 'true';
+    updateAuthUI();
+  }
+
+  function updateAuthUI() {
+    const btn = document.getElementById('auth-btn');
+    const formBlock = document.getElementById('form-block');
+    const dataTools = document.getElementById('data-tools');
+    const delButtons = document.querySelectorAll('.del');
+
+    if (isEditor) {
+      btn.textContent = 'Редактор';
+      btn.className = 'auth-btn editor';
+      formBlock.classList.remove('hide-viewer');
+      dataTools.classList.remove('hide-viewer');
+      delButtons.forEach(b => b.classList.remove('hide-viewer'));
+    } else {
+      btn.textContent = 'Войти';
+      btn.className = 'auth-btn viewer';
+      formBlock.classList.add('hide-viewer');
+      dataTools.classList.add('hide-viewer');
+      delButtons.forEach(b => b.classList.add('hide-viewer'));
+    }
+  }
+
+  document.getElementById('auth-btn').onclick = () => {
+    if (isEditor) {
+      // Выход
+      if (confirm('Выйти из режима редактирования?')) {
+        localStorage.removeItem(AUTH_KEY);
+        isEditor = false;
+        updateAuthUI();
+        showToast('Режим просмотра');
+      }
+    } else {
+      // Вход
+      document.getElementById('pwd-modal').classList.add('on');
+      document.getElementById('pwd-input').value = '';
+      setTimeout(() => document.getElementById('pwd-input').focus(), 100);
+    }
+  };
+
+  document.getElementById('pwd-cancel').onclick = () => {
+    document.getElementById('pwd-modal').classList.remove('on');
+  };
+
+  document.getElementById('pwd-ok').onclick = tryLogin;
+  document.getElementById('pwd-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryLogin();
+  });
+
+  function tryLogin() {
+    const val = document.getElementById('pwd-input').value.trim();
+    if (val === PASSWORD) {
+      localStorage.setItem(AUTH_KEY, 'true');
+      isEditor = true;
+      document.getElementById('pwd-modal').classList.remove('on');
+      updateAuthUI();
+      render();
+      showToast('Режим редактирования активен', 'success');
+    } else {
+      const inp = document.getElementById('pwd-input');
+      inp.style.borderColor = '#f87171';
+      setTimeout(() => inp.style.borderColor = '', 800);
+      showToast('Неверный код', 'error');
+    }
+  }
 
   // ===== ПРИВЕТСТВИЕ ПО ВРЕМЕНИ =====
   function setGreeting() {
@@ -579,7 +658,6 @@
   const todayStr = new Date().toISOString().split('T')[0];
   document.getElementById('in-date').value = todayStr;
 
-  // ===== TOAST =====
   function showToast(msg, type) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -593,7 +671,6 @@
     document.getElementById('sync-text').textContent = text;
   }
 
-  // ===== RR =====
   function calcRR(entry, stop, take) {
     if (!entry || !stop || !take) return null;
     const risk = Math.abs(entry - stop);
@@ -634,7 +711,6 @@
     reader.readAsDataURL(file);
   });
 
-  // ===== BACKGROUND WAVES =====
   function updateWaves(pnl) {
     const el = document.getElementById('bg-waves');
     const root = document.documentElement;
@@ -653,7 +729,6 @@
     }
   }
 
-  // ===== RENDER =====
   function render() {
     const total = entries.length;
     const wins = entries.filter(e => e.result === 'win').length;
@@ -662,7 +737,6 @@
     const rrs = entries.map(e => e.rr).filter(v => v !== null && v !== undefined && !isNaN(v));
     const avgRR = rrs.length ? (rrs.reduce((a, b) => a + b, 0) / rrs.length) : null;
 
-    // Большая цифра
     const bigVal = document.getElementById('big-pnl-value');
     if (pnl === 0) {
       bigVal.textContent = '$0';
@@ -684,7 +758,6 @@
 
     updateWaves(pnl);
 
-    // Статистика
     document.getElementById('s-total').textContent = total;
     document.getElementById('s-wr').textContent = wr + '%';
     document.getElementById('s-wr').className = 'stat-value ' + (wr >= 50 ? 'pos' : total ? 'neg' : 'neu');
@@ -700,7 +773,7 @@
     const list = document.getElementById('list');
     const filtered = filter === 'all' ? entries : entries.filter(e => e.result === filter);
     if (!filtered.length) {
-      list.innerHTML = '<div class="empty">Пока пусто. Добавь первую сделку ↑</div>';
+      list.innerHTML = '<div class="empty">Пока пусто</div>';
       return;
     }
 
@@ -713,6 +786,7 @@
         ? `<span class="rr-badge ${rrClass(rr)}">RR ${rr.toFixed(2)}</span>` : '';
       const shot = e.shot ? `<img class="entry-shot" src="${e.shot}" data-full="${e.shot}">` : '';
       const dateStr = e.date ? e.date.split('-').reverse().join('.') : '';
+      const delBtn = isEditor ? `<button class="del" data-i="${realIdx}">×</button>` : '';
       return `
         <div class="entry ${e.result}">
           <div class="entry-main">
@@ -723,7 +797,7 @@
             </div>
             <div class="entry-right">
               <div class="entry-pnl ${pnlClass}">${pnlStr}</div>
-              <button class="del" data-i="${realIdx}">×</button>
+              ${delBtn}
             </div>
           </div>
           ${shot}
@@ -734,6 +808,7 @@
     list.querySelectorAll('.del').forEach(b => {
       b.onclick = (ev) => {
         ev.stopPropagation();
+        if (!isEditor) return;
         entries.splice(+b.dataset.i, 1);
         save(); render(); renderCalendar();
       };
@@ -752,13 +827,14 @@
   }
 
   function save() {
+    if (!isEditor) return;
     try { localStorage.setItem(KEY, JSON.stringify(entries)); } catch(e) {}
     clearTimeout(saveTimer);
     saveTimer = setTimeout(pushToCloud, 800);
   }
 
   async function pushToCloud() {
-    if (suppressSync) return;
+    if (suppressSync || !isEditor) return;
     setSync('syncing', 'Сохранение...');
     try {
       await setDoc(DOC_REF, { entries: entries, updatedAt: Date.now() });
@@ -770,6 +846,7 @@
   }
 
   document.getElementById('add').onclick = () => {
+    if (!isEditor) return;
     const ticker = document.getElementById('in-ticker').value.trim().toUpperCase();
     const result = document.getElementById('in-result').value;
     const date = document.getElementById('in-date').value || todayStr;
@@ -922,8 +999,8 @@
     document.getElementById('modal').classList.remove('on');
   };
 
-  // ===== EXPORT / IMPORT =====
   document.getElementById('btn-export').onclick = () => {
+    if (!isEditor) return;
     if (!entries.length) { showToast('Нет данных для экспорта', 'error'); return; }
     const data = { version: 1, exportedAt: new Date().toISOString(), count: entries.length, entries };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -936,7 +1013,10 @@
     showToast(`Экспортировано ${entries.length} сделок`, 'success');
   };
 
-  document.getElementById('btn-import').onclick = () => document.getElementById('import-file').click();
+  document.getElementById('btn-import').onclick = () => {
+    if (!isEditor) return;
+    document.getElementById('import-file').click();
+  };
 
   const importInput = document.createElement('input');
   importInput.type = 'file';
@@ -946,6 +1026,7 @@
   document.body.appendChild(importInput);
 
   importInput.addEventListener('change', (ev) => {
+    if (!isEditor) return;
     const file = ev.target.files[0];
     if (!file) return;
     const reader = new FileReader();
@@ -965,7 +1046,6 @@
     reader.readAsText(file);
   });
 
-  // ===== FIREBASE SYNC =====
   (async () => {
     try {
       setSync('syncing', 'Подключение...');
@@ -979,13 +1059,13 @@
         const local = JSON.parse(localStorage.getItem(KEY) || '[]');
         if (local.length) {
           entries = local;
-          await setDoc(DOC_REF, { entries, updatedAt: Date.now() });
-          setSync('online', 'Синхронизировано');
+          setSync('online', 'Локальные данные');
         } else {
           setSync('online', 'Облако пустое');
         }
       }
 
+      checkAuth();
       render(); renderCalendar();
 
       onSnapshot(DOC_REF, (docSnap) => {
@@ -1005,10 +1085,12 @@
       console.error(err);
       setSync('error', 'Ошибка: ' + (err.message || 'нет связи'));
       entries = JSON.parse(localStorage.getItem(KEY) || '[]');
+      checkAuth();
       render(); renderCalendar();
     }
   })();
 
+  checkAuth();
   render(); renderCalendar();
 </script>
 </body>
