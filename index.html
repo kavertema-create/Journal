@@ -35,7 +35,6 @@
   }
   .date { font-size: 12px; color: #555; padding-top: 4px; }
 
-  /* Табы */
   .tabs {
     display: flex; gap: 6px; margin-bottom: 24px;
     background: #141414; padding: 5px; border-radius: 12px;
@@ -49,7 +48,6 @@
   }
   .tab.active { background: #262626; color: #e8e8e8; }
 
-  /* Статистика — 2x2 */
   .stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -74,7 +72,6 @@
   .stat-value.mid { color: #fbbf24; }
   .stat-value.bad { color: #f87171; }
 
-  /* Форма */
   .form {
     background: #141414; border: 1px solid #1e1e1e;
     border-radius: 18px; padding: 18px; margin-bottom: 20px;
@@ -157,6 +154,33 @@
   }
   .btn:active { transform: scale(0.98); opacity: 0.8; }
 
+  /* Data tools */
+  .data-tools {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .data-btn {
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    color: #aab8cc;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .data-btn:active { background: #1e1e1e; transform: scale(0.97); }
+  .data-btn.export { color: #34d399; }
+  .data-btn.import { color: #60a5fa; }
+
   .list { display: flex; flex-direction: column; gap: 10px; }
   .empty {
     text-align: center; color: #444; font-size: 14px; padding: 40px 0;
@@ -238,7 +262,6 @@
     background: #e8e8e8; color: #0a0a0a; border-color: #e8e8e8;
   }
 
-  /* Календарь */
   .cal-header {
     display: flex; justify-content: space-between;
     align-items: center; margin-bottom: 16px;
@@ -327,7 +350,6 @@
   .cal-dot.g { background: rgba(52,211,153,0.5); border: 1px solid rgba(52,211,153,0.8); }
   .cal-dot.r { background: rgba(248,113,113,0.5); border: 1px solid rgba(248,113,113,0.8); }
 
-  /* Модалка */
   .modal {
     position: fixed; inset: 0; background: rgba(0,0,0,0.95);
     display: none; align-items: center; justify-content: center;
@@ -335,6 +357,28 @@
   }
   .modal.on { display: flex; }
   .modal img { max-width: 100%; max-height: 100%; border-radius: 12px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #1e1e1e;
+    color: #e8e8e8;
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 200;
+    transition: transform 0.3s ease;
+    border: 1px solid #333;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.on { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: #34d399; color: #34d399; }
+  .toast.error { border-color: #f87171; color: #f87171; }
 </style>
 </head>
 <body>
@@ -426,6 +470,12 @@
         <input type="text" id="in-note" placeholder="Заметка (необязательно)" maxlength="80">
       </div>
       <button class="btn" id="add">Добавить сделку</button>
+    </div>
+
+    <div class="data-tools">
+      <button class="data-btn export" id="btn-export">📤 Экспорт данных</button>
+      <button class="data-btn import" id="btn-import">📥 Импорт данных</button>
+      <input type="file" id="import-file" accept=".json,application/json" style="display:none">
     </div>
 
     <div class="filters">
@@ -538,6 +588,8 @@
     <img id="modal-img">
   </div>
 
+  <div class="toast" id="toast"></div>
+
 <script>
   const KEY = 'trade_journal_izotov_v2';
   let entries = JSON.parse(localStorage.getItem(KEY) || '[]');
@@ -554,6 +606,15 @@
   const todayStr = new Date().toISOString().split('T')[0];
   document.getElementById('in-date').value = todayStr;
 
+  // ===== TOAST =====
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast on' + (type ? ' ' + type : '');
+    setTimeout(() => { t.className = 'toast' + (type ? ' ' + type : ''); }, 3000);
+  }
+
+  // ===== RR =====
   function calcRR(entry, stop, take) {
     if (!entry || !stop || !take) return null;
     const risk = Math.abs(entry - stop);
@@ -594,13 +655,13 @@
     reader.readAsDataURL(file);
   });
 
+  // ===== RENDER =====
   function render() {
     const total = entries.length;
     const wins = entries.filter(e => e.result === 'win').length;
     const wr = total ? Math.round((wins / total) * 100) : 0;
     const pnl = entries.reduce((s, e) => s + (e.pnl || 0), 0);
 
-    // Средний RR
     const rrs = entries.map(e => e.rr).filter(v => v !== null && v !== undefined && !isNaN(v));
     const avgRR = rrs.length ? (rrs.reduce((a, b) => a + b, 0) / rrs.length) : null;
 
@@ -837,6 +898,74 @@
   document.getElementById('modal').onclick = () => {
     document.getElementById('modal').classList.remove('on');
   };
+
+  // ===== EXPORT / IMPORT =====
+  document.getElementById('btn-export').onclick = () => {
+    if (!entries.length) {
+      showToast('Нет данных для экспорта', 'error');
+      return;
+    }
+    const data = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      count: entries.length,
+      entries: entries
+    };
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const date = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `izotov-journal-${date}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast(`Экспортировано ${entries.length} сделок ✓`, 'success');
+  };
+
+  document.getElementById('btn-import').onclick = () => {
+    document.getElementById('import-file').click();
+  };
+
+  document.getElementById('import-file').addEventListener('change', (ev) => {
+    const file = ev.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        let imported = [];
+        if (Array.isArray(data)) {
+          imported = data; // просто массив сделок
+        } else if (data && Array.isArray(data.entries)) {
+          imported = data.entries; // наш формат с обёрткой
+        } else {
+          throw new Error('Неверный формат');
+        }
+
+        if (!imported.length) {
+          showToast('Файл пустой', 'error');
+          return;
+        }
+
+        const ok = confirm(`Найдено ${imported.length} сделок.\n\nOK — добавить к текущим\nОтмена — заменить все`);
+        if (ok) {
+          entries = entries.concat(imported);
+          showToast(`Добавлено ${imported.length} сделок ✓`, 'success');
+        } else {
+          entries = imported;
+          showToast(`Загружено ${imported.length} сделок (замена) ✓`, 'success');
+        }
+        save(); render(); renderCalendar();
+      } catch (err) {
+        showToast('Ошибка: файл повреждён или неверный формат', 'error');
+      }
+      ev.target.value = '';
+    };
+    reader.readAsText(file);
+  });
 
   render();
   renderCalendar();
