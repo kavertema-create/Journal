@@ -512,11 +512,14 @@
   .cal-day.loss .cal-num { color: rgba(239,68,68,0.8); }
 
   .cal-pnl {
-    font-size: 9px; font-weight: 800;
-    margin-top: 10px; line-height: 1.1; text-align: center;
-    padding: 0 2px; word-break: break-all;
-    font-variant-numeric: tabular-nums;
-  }
+  font-size: 9px; font-weight: 800;
+  margin-top: 10px; line-height: 1.1; text-align: center;
+  padding: 0 2px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
   .cal-day.profit .cal-pnl { color: #10b981; }
   .cal-day.loss .cal-pnl { color: #ef4444; }
 
@@ -1041,11 +1044,11 @@
     return sign + '$' + s;
   }
   function fmtShort(v) {
-    const abs = Math.abs(v);
-    if (abs >= 1000000) return (abs/1000000).toFixed(1) + 'M';
-    if (abs >= 1000) return (abs/1000).toFixed(1) + 'k';
-    return abs.toFixed(0);
-  }
+  const abs = Math.abs(v);
+  if (abs >= 1000000) return (abs/1000000).toFixed(1) + 'M';
+  if (abs >= 1000) return (abs/1000).toFixed(1) + 'k';
+  return Math.round(abs).toString();
+}
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function(c) {
       return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
