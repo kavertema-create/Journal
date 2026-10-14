@@ -6,11 +6,8 @@
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Prop Journal</title>
-
-<!-- Firebase (non-module) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { overflow-x: hidden; }
@@ -138,7 +135,6 @@
     font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
   }
   .progress-num.ok { color: #10b981; }
-  .progress-num.warn { color: #f59e0b; }
   .progress-num.danger { color: #ef4444; }
   .progress-num.dark { color: #0a0a0a; }
 
@@ -153,7 +149,6 @@
     background: #0a0a0a;
   }
   .progress-fill.ok { background: #10b981; }
-  .progress-fill.warn { background: #f59e0b; }
   .progress-fill.danger { background: #ef4444; }
   .progress-fill.accent { background: linear-gradient(90deg, #0a0a0a, #444); }
 
@@ -316,10 +311,11 @@
   .archive-item.passed::before { background: #10b981; }
   .archive-item.failed::before { background: #ef4444; }
 
-  .archive-top {
-    display: flex; justify-content: space-between;
-    align-items: flex-start; gap: 12px; margin-bottom: 10px;
-  }
+ .archive-top {
+  display: flex; justify-content: space-between;
+  align-items: flex-start; gap: 12px; margin-bottom: 10px;
+  padding-right: 40px;
+}
   .archive-name {
     font-size: 15px; font-weight: 700;
     letter-spacing: -0.02em; color: #fff;
@@ -352,6 +348,16 @@
     font-size: 11px; color: #444; font-weight: 500;
     letter-spacing: 0.02em;
   }
+  .archive-del {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+    color: #ef4444; width: 28px; height: 28px; border-radius: 8px;
+    display: none; align-items: center; justify-content: center;
+    font-size: 14px; cursor: pointer; z-index: 2;
+    font-family: inherit;
+  }
+  .archive-item .archive-del.show { display: flex; }
+  .archive-del:active { background: rgba(239,68,68,0.25); }
 
   .bottom-tabs {
     position: fixed; bottom: 0; left: 0; right: 0;
@@ -365,7 +371,7 @@
   .bottom-tab {
     background: none; border: none; font-family: inherit;
     display: flex; flex-direction: column; align-items: center;
-    gap: 4px; padding: 6px 14px; cursor: pointer;
+    gap: 4px; padding: 6px 8px; cursor: pointer;
     color: #444; font-size: 9px; font-weight: 700;
     letter-spacing: 0.1em; text-transform: uppercase;
     transition: color 0.2s;
@@ -512,14 +518,14 @@
   .cal-day.loss .cal-num { color: rgba(239,68,68,0.8); }
 
   .cal-pnl {
-  font-size: 9px; font-weight: 800;
-  margin-top: 10px; line-height: 1.1; text-align: center;
-  padding: 0 2px;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  overflow: hidden;
-  max-width: 100%;
-}
+    font-size: 9px; font-weight: 800;
+    margin-top: 10px; line-height: 1.1; text-align: center;
+    padding: 0 2px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 100%;
+  }
   .cal-day.profit .cal-pnl { color: #10b981; }
   .cal-day.loss .cal-pnl { color: #ef4444; }
 
@@ -665,9 +671,119 @@
   }
   .mf-hint { font-size: 11px; color: #444; margin-top: 6px; }
   .mf-btns { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 20px; }
+
+  .sys-header {
+    background: #fff; color: #0a0a0a;
+    border-radius: 26px; padding: 28px 24px;
+    margin-bottom: 16px;
+  }
+  .sys-header-label {
+    font-size: 10px; color: rgba(10,10,10,0.45);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .sys-header-title {
+    font-size: 24px; font-weight: 700;
+    letter-spacing: -0.035em; line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  .sys-header-sub {
+    font-size: 13px; color: rgba(10,10,10,0.55);
+    font-weight: 500; line-height: 1.5;
+  }
+  .sys-header-meta {
+    display: flex; gap: 16px; margin-top: 16px;
+    padding-top: 16px; border-top: 1px solid rgba(10,10,10,0.08);
+    font-size: 11px; color: rgba(10,10,10,0.5);
+    font-weight: 600;
+  }
+  .sys-header-meta b { color: #0a0a0a; font-weight: 800; }
+
+  .sys-block {
+    background: #141414; border: 1px solid #1f1f1f;
+    border-radius: 18px; padding: 20px; margin-bottom: 10px;
+  }
+  .sys-block-num {
+    font-size: 10px; color: #555;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .sys-block-title {
+    font-size: 17px; font-weight: 700;
+    letter-spacing: -0.02em; color: #fff;
+    margin-bottom: 12px; line-height: 1.3;
+  }
+  .sys-block-body {
+    font-size: 14px; color: #aaa;
+    line-height: 1.6; font-weight: 500;
+  }
+  .sys-block-body strong { color: #fff; font-weight: 700; }
+  .sys-block-body ul {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .sys-block-body li {
+    padding: 6px 0 6px 18px; position: relative;
+    color: #aaa;
+  }
+  .sys-block-body li::before {
+    content: '—'; position: absolute; left: 0;
+    color: #444;
+  }
+
+  .sys-rule {
+    background: #0f0f0f; border: 1px solid #1a1a1a;
+    border-radius: 12px; padding: 14px 16px;
+    margin-bottom: 8px;
+    display: flex; justify-content: space-between;
+    align-items: center; gap: 12px;
+  }
+  .sys-rule-label {
+    font-size: 13px; color: #888;
+    font-weight: 500; flex: 1;
+  }
+  .sys-rule-value {
+    font-size: 15px; font-weight: 800;
+    color: #fff; letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .sys-rule-value.danger { color: #ef4444; }
+  .sys-rule-value.ok { color: #10b981; }
+
+  .sys-warning {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 14px; padding: 16px;
+    margin-top: 10px;
+  }
+  .sys-warning-title {
+    font-size: 11px; color: #f59e0b;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    font-weight: 800; margin-bottom: 8px;
+  }
+  .sys-warning-text {
+    font-size: 13px; color: #d97706;
+    line-height: 1.5; font-weight: 500;
+  }
+
+  .sys-danger {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 14px; padding: 16px;
+    margin-top: 10px;
+  }
+  .sys-danger-title {
+    font-size: 11px; color: #ef4444;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    font-weight: 800; margin-bottom: 8px;
+  }
+  .sys-danger-text {
+    font-size: 13px; color: #f87171;
+    line-height: 1.5; font-weight: 500;
+  }
 </style>
 </head>
-<body> <!-- SPLASH -->
+<body>
 <div class="splash" id="splash">
   <canvas id="splash-canvas"></canvas>
   <div class="splash-content">
@@ -677,7 +793,6 @@
   </div>
 </div>
 
-<!-- MODAL: NEW CHALLENGE -->
 <div class="modal-form" id="new-chal-modal">
   <div class="modal-form-box">
     <div class="modal-form-title">New Challenge</div>
@@ -718,7 +833,6 @@
   </div>
 </div>
 
-<!-- HEADER -->
 <header>
   <div class="brand">
     <div class="brand-mark">P</div>
@@ -729,7 +843,6 @@
   </div>
 </header>
 
-<!-- VIEW: HOME -->
 <div class="view active" id="view-home">
   <div id="active-chal-container"></div>
 
@@ -757,7 +870,173 @@
   </div>
 </div>
 
-<!-- VIEW: ARCHIVE -->
+<div class="view" id="view-system">
+  <div class="sys-header">
+    <div class="sys-header-label">Trading System</div>
+    <div class="sys-header-title">Izotov Method</div>
+    <div class="sys-header-sub">Снятие ликвидности · FVG · Интрадей NDX100. Работаю только по системе — без импровизаций.</div>
+    <div class="sys-header-meta">
+      <span>RR <b>1:3</b></span>
+      <span>Риск <b>1%</b></span>
+      <span>Лимит дня <b>1%</b></span>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">01 · Context</div>
+    <div class="sys-block-title">Что смотрю перед входом</div>
+    <div class="sys-block-body">
+      <ul>
+        <li><strong>H4</strong> — глобальный тренд, ключевые уровни</li>
+        <li><strong>H1</strong> — общая структура, зоны ликвидности</li>
+        <li><strong>M15</strong> — уточнение, поиск FVG</li>
+        <li><strong>M1</strong> — вход и управление</li>
+      </ul>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #1a1a1a;">
+        Ищу: <strong>тренд</strong> или <strong>диапазон</strong> с чёткими границами.<br>
+        НЕ торгую: <strong>консолидации</strong>, ситуации где все неэффективности перекрыты.
+      </div>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">02 · Setups</div>
+    <div class="sys-block-title">Три сетапа, которые торгую</div>
+    <div class="sys-block-body">
+      <p style="margin-bottom:10px;"><strong>№1 · Снятие ликвидности (основной)</strong><br>Цена приходит к нижней/верхней границе → свип → быстрый возврат → вход на лое или на возврате.</p>
+      <p style="margin-bottom:10px;"><strong>№2 · Отскок от FVG</strong><br>Возврат к незакрытой неэффективности → отскок → вход до следующего FVG или уровня.</p>
+      <p><strong>№3 · Двойное снятие (добор)</strong><br>Первый свип → второй свип → стоп не зацеплен → ожидание разворота → добор.</p>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">03 · Entry Rules</div>
+    <div class="sys-block-title">Как вхожу</div>
+    <div class="sys-block-body">
+      <ul>
+        <li>Не вхожу раньше — <strong>не ловлю нож</strong></li>
+        <li>Жду <strong>свип + возврат</strong> или <strong>отскок от FVG</strong></li>
+        <li>Могу войти <strong>на границе</strong> сразу — если уверен</li>
+        <li>Добавляюсь <strong>только при двойном снятии</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">04 · Stop Loss</div>
+    <div class="sys-block-title">Куда ставлю стоп</div>
+    <div class="sys-block-body">
+      <ul>
+        <li>За <strong>снятием</strong> (за лоем/хаем)</li>
+        <li>Так, чтобы <strong>второй свип его не задел</strong></li>
+        <li>Не по ATR — <strong>по структуре</strong></li>
+        <li>Риск: <strong>не более 1% от счёта</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">05 · Take Profit</div>
+    <div class="sys-block-title">Как забираю прибыль</div>
+    <div class="sys-block-body">
+      <ul>
+        <li>До <strong>FVG</strong> или до <strong>уровня</strong></li>
+        <li>Частями <strong>не закрываю</strong> — жду полного срабатывания</li>
+        <li>Цель: <strong>RR 1:3</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">06 · Risk Rules</div>
+    <div class="sys-block-title">Правила риска — железные</div>
+    <div class="sys-rule"><div class="sys-rule-label">Риск на сделку</div><div class="sys-rule-value danger">≤ 1%</div></div>
+    <div class="sys-rule"><div class="sys-rule-label">Дневной лимит убытка</div><div class="sys-rule-value danger">1% — стоп на день</div></div>
+    <div class="sys-rule"><div class="sys-rule-label">Частичное закрытие</div><div class="sys-rule-value">Нет</div></div>
+    <div class="sys-rule"><div class="sys-rule-label">Перевод в БУ</div><div class="sys-rule-value">Нет</div></div>
+    <div class="sys-rule"><div class="sys-rule-label">Сделок в день</div><div class="sys-rule-value">1–3</div></div>
+    <div class="sys-rule"><div class="sys-rule-label">Лимит по времени</div><div class="sys-rule-value">Нет</div></div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">07 · Timing</div>
+    <div class="sys-block-title">Когда торгую</div>
+    <div class="sys-block-body">
+      <ul>
+        <li><strong>19:00 МСК</strong> — основная сессия</li>
+        <li><strong>16:00 МСК</strong> — открытие NY, если есть время</li>
+        <li>Иногда через <strong>выходные</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">08 · News</div>
+    <div class="sys-block-title">Отношение к новостям</div>
+    <div class="sys-block-body">
+      <ul>
+        <li><strong>Проверяю</strong> календарь перед сессией</li>
+        <li>Во время важных новостей — <strong>торгую</strong>, если есть сетап</li>
+        <li>Помнить: FOMC/CPI/NFP → волатильность ×3–5</li>
+      </ul>
+    </div>
+    <div class="sys-warning">
+      <div class="sys-warning-title">Внимание · News Risk</div>
+      <div class="sys-warning-text">Во время FOMC/CPI/NFP — снижать риск до 0.5% или пропускать. Стоп может проскочить по цене.</div>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">09 · Psychology</div>
+    <div class="sys-block-title">Триггеры и реакция</div>
+    <div class="sys-block-body">
+      <p style="margin-bottom:10px;"><strong>Что бесит:</strong></p>
+      <ul>
+        <li>Выбило по стопу → пошло в мою сторону</li>
+        <li>Пропустил вход</li>
+        <li>Рано закрыл</li>
+      </ul>
+      <p style="margin-top:12px;margin-bottom:10px;"><strong>Реакция:</strong></p>
+      <ul>
+        <li>Не зацикливаюсь</li>
+        <li>При тильте — <strong>пауза 15–30 мин</strong></li>
+        <li>Если не отпускает — <strong>закрываю день</strong> осознанно</li>
+      </ul>
+    </div>
+    <div class="sys-danger">
+      <div class="sys-danger-title">Слабое место · Overtrading</div>
+      <div class="sys-danger-text">Иногда торгую больше, чем нужно. Правило «1% — стоп» есть, но не всегда соблюдается. Работать над этим ежедневно.</div>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">10 · Pre-Session</div>
+    <div class="sys-block-title">Ритуал перед сессией (5 мин)</div>
+    <div class="sys-block-body">
+      <ul>
+        <li>Отметить <strong>2–3 уровня</strong> на H1/H4 где стоит ликвидность</li>
+        <li>Отметить <strong>FVG</strong>, куда цена может вернуться</li>
+        <li>Проверить <strong>новости</strong> на ближайший час</li>
+        <li>Записать <strong>план</strong>: «если пойдёт туда — делаю то»</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sys-block">
+    <div class="sys-block-num">11 · Golden Rules</div>
+    <div class="sys-block-title">Три правила, которые нельзя нарушать</div>
+    <div class="sys-rule"><div class="sys-rule-label">1. Лимит дня</div><div class="sys-rule-value danger">−1% → стоп</div></div>
+    <div class="sys-rule"><div class="sys-rule-label">2. Риск на сделку</div><div class="sys-rule-value danger">≤ 1%</div></div>
+    <div class="sys-rule"><div class="sys-rule-label">3. Работать по системе</div><div class="sys-rule-value ok">Не импровизировать</div></div>
+    <div class="sys-danger" style="margin-top:14px;">
+      <div class="sys-danger-title">Нарушил правило → конец дня</div>
+      <div class="sys-danger-text">Даже если вижу сетап. Даже если уверен. Дисциплина важнее одной сделки.</div>
+    </div>
+  </div>
+
+  <div style="height:20px;"></div>
+</div>
+
 <div class="view" id="view-archive">
   <div class="section-title">
     <span>Archive</span>
@@ -770,7 +1049,6 @@
   </button>
 </div>
 
-<!-- VIEW: CALENDAR -->
 <div class="view" id="view-calendar">
   <div class="cal-header">
     <div class="cal-month" id="cal-month">—</div>
@@ -789,7 +1067,6 @@
   </div>
 </div>
 
-<!-- VIEW: SETTINGS -->
 <div class="view" id="view-settings">
   <div class="section-title"><span>Settings</span></div>
 
@@ -813,7 +1090,7 @@
     <div class="set-title">About</div>
     <div class="set-row">
       <div class="set-label">Version</div>
-      <div class="set-value">2.2</div>
+      <div class="set-value">2.3</div>
     </div>
     <div class="set-row">
       <div class="set-label">Sync</div>
@@ -822,27 +1099,24 @@
   </div>
 </div>
 
-<!-- BOTTOM TABS -->
 <div class="bottom-tabs">
   <button class="bottom-tab active" data-view="home">
-    <span class="icon">●</span>
-    Active
+    <span class="icon">●</span>Active
+  </button>
+  <button class="bottom-tab" data-view="system">
+    <span class="icon">◆</span>System
   </button>
   <button class="bottom-tab" data-view="archive">
-    <span class="icon">▤</span>
-    Archive
+    <span class="icon">▤</span>Archive
   </button>
   <button class="bottom-tab" data-view="calendar">
-    <span class="icon">▦</span>
-    Calendar
+    <span class="icon">▦</span>Calendar
   </button>
   <button class="bottom-tab" data-view="settings">
-    <span class="icon">✱</span>
-    Settings
+    <span class="icon">✱</span>Settings
   </button>
 </div>
 
-<!-- SHEET -->
 <div class="sheet-overlay" id="sheet-overlay"></div>
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
@@ -903,7 +1177,6 @@
 <div class="modal" id="modal"><img id="modal-img"></div>
 <div class="toast" id="toast"></div>
 
-<!-- PASSWORD -->
 <div class="pwd-modal" id="pwd-modal">
   <div class="pwd-box">
     <div class="pwd-title">Editor Mode</div>
@@ -917,7 +1190,6 @@
 </div>
 
 <script>
-  // ===== FIREBASE CONFIG =====
   const firebaseConfig = {
     apiKey: "AIzaSyCgOEckc1xoTrJEdcRXGi_TsfsW-y02AcQ",
     authDomain: "journal-ebc24.firebaseapp.com",
@@ -929,17 +1201,18 @@
 
   let db = null;
   let DOC_REF = null;
+
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
-    DOC_REF = db.collection('prop_v4').doc('main');
+    DOC_REF = db.collection('prop_v5').doc('main');
   } catch (e) {
-    console.warn('Firebase init failed, using local only', e);
+    console.warn('Firebase init failed:', e);
   }
 
   const PASSWORD = '2773';
-  const AUTH_KEY = 'prop_v4_auth';
-  const DATA_KEY = 'prop_v4_data';
+  const AUTH_KEY = 'prop_v5_auth';
+  const DATA_KEY = 'prop_v5_data';
 
   let state = { active: null, trades: [], archive: [] };
   let filter = 'all';
@@ -951,15 +1224,17 @@
   let isEditor = false;
   let toastTimer = null;
 
-  // ===== SPLASH =====
   (function splash() {
     const canvas = document.getElementById('splash-canvas');
     const ctx = canvas.getContext('2d');
     let W, H;
+
     function resize() {
       const dpr = window.devicePixelRatio || 1;
-      W = window.innerWidth; H = window.innerHeight;
-      canvas.width = W * dpr; canvas.height = H * dpr;
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
@@ -968,6 +1243,7 @@
     const candles = [];
     const COUNT = 26;
     let price = 50;
+
     for (let i = 0; i < COUNT; i++) {
       const o = price;
       const c = o + (Math.random() - 0.45) * 10;
@@ -976,7 +1252,8 @@
       candles.push({ o, c, h, l });
       price = c;
     }
-    const all = candles.flatMap(c => [c.h, c.l]);
+
+    const all = candles.flatMap(function(c) { return [c.h, c.l]; });
     const max = Math.max.apply(null, all);
     const min = Math.min.apply(null, all);
     const range = max - min || 1;
@@ -995,12 +1272,15 @@
       const chartH = H * 0.4;
       const cw = chartW / COUNT;
       const bodyW = cw * 0.5;
-      const yOf = v => padY + chartH - ((v - min) / range) * chartH;
+      const yOf = function(v) {
+        return padY + chartH - ((v - min) / range) * chartH;
+      };
       const visible = progress * COUNT;
 
-      candles.forEach((c, i) => {
+      candles.forEach(function(c, i) {
         const appear = Math.min(1, Math.max(0, visible - i));
         if (appear <= 0) return;
+
         const x = padX + i * cw + cw / 2;
         const up = c.c >= c.o;
 
@@ -1023,18 +1303,20 @@
 
       ctx.globalAlpha = 1;
 
-      if (progress < 1) requestAnimationFrame(draw);
-      else {
-        setTimeout(() => {
+      if (progress < 1) {
+        requestAnimationFrame(draw);
+      } else {
+        setTimeout(function() {
           document.getElementById('splash').classList.add('hide');
-          setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 800);
+          setTimeout(function() {
+            document.getElementById('splash').style.display = 'none';
+          }, 800);
         }, 200);
       }
     }
     requestAnimationFrame(draw);
   })();
 
-  // ===== UTILS =====
   function fmtMoney(v) {
     const sign = v > 0 ? '+' : v < 0 ? '−' : '';
     const abs = Math.abs(v);
@@ -1043,17 +1325,20 @@
     else s = abs.toFixed(2);
     return sign + '$' + s;
   }
+
   function fmtShort(v) {
-  const abs = Math.abs(v);
-  if (abs >= 1000000) return (abs/1000000).toFixed(1) + 'M';
-  if (abs >= 1000) return (abs/1000).toFixed(1) + 'k';
-  return Math.round(abs).toString();
-}
+    const abs = Math.abs(v);
+    if (abs >= 1000000) return (abs / 1000000).toFixed(1) + 'M';
+    if (abs >= 1000) return (abs / 1000).toFixed(1) + 'k';
+    return Math.round(abs).toString();
+  }
+
   function esc(s) {
     return String(s).replace(/[&<>"]/g, function(c) {
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
     });
   }
+
   function showToast(msg, type) {
     const t = document.getElementById('toast');
     clearTimeout(toastTimer);
@@ -1063,17 +1348,18 @@
       t.className = 'toast' + (type ? ' ' + type : '');
     }, 2500);
   }
+
   function setSync(st, text) {
     const el = document.getElementById('sync-status');
     el.className = 'sync ' + st;
     document.getElementById('sync-text').textContent = text;
   }
 
-  // ===== AUTH =====
   function checkAuth() {
     isEditor = localStorage.getItem(AUTH_KEY) === 'true';
     updateAuthUI();
   }
+
   function updateAuthUI() {
     const btn = document.getElementById('auth-btn');
     document.querySelectorAll('.hide-viewer').forEach(function(el) {
@@ -1088,12 +1374,14 @@
       btn.textContent = '🔒';
     }
   }
+
   document.getElementById('auth-btn').onclick = function() {
     if (isEditor) {
       if (confirm('Exit editor mode?')) {
         localStorage.removeItem(AUTH_KEY);
         isEditor = false;
-        updateAuthUI(); render();
+        updateAuthUI();
+        render();
         showToast('View mode');
       }
     } else {
@@ -1102,6 +1390,7 @@
       setTimeout(function() { document.getElementById('pwd-input').focus(); }, 100);
     }
   };
+
   document.getElementById('pwd-cancel').onclick = function() {
     document.getElementById('pwd-modal').classList.remove('on');
   };
@@ -1109,13 +1398,15 @@
   document.getElementById('pwd-input').addEventListener('keydown', function(e) {
     if (e.key === 'Enter') tryLogin();
   });
+
   function tryLogin() {
     const val = document.getElementById('pwd-input').value.trim();
     if (val === PASSWORD) {
       localStorage.setItem(AUTH_KEY, 'true');
       isEditor = true;
       document.getElementById('pwd-modal').classList.remove('on');
-      updateAuthUI(); render();
+      updateAuthUI();
+      render();
       showToast('Editor mode', 'success');
     } else {
       const inp = document.getElementById('pwd-input');
@@ -1125,7 +1416,6 @@
     }
   }
 
-  // ===== TABS =====
   document.querySelectorAll('.bottom-tab').forEach(function(t) {
     t.onclick = function() {
       document.querySelectorAll('.bottom-tab').forEach(function(x) { x.classList.remove('active'); });
@@ -1137,11 +1427,9 @@
     };
   });
 
-  // ===== DATE =====
   const todayStr = new Date().toISOString().split('T')[0];
   document.getElementById('in-date').value = todayStr;
 
-  // ===== DIRECTION =====
   document.getElementById('dir-long').onclick = function() {
     currentDir = 'long';
     document.getElementById('dir-long').className = 'dir-btn on-long';
@@ -1153,7 +1441,6 @@
     document.getElementById('dir-short').className = 'dir-btn on-short';
   };
 
-  // ===== RR =====
   function calcRR(entry, stop, take) {
     if (!entry || !stop || !take) return null;
     const risk = Math.abs(entry - stop);
@@ -1161,6 +1448,7 @@
     if (risk === 0) return null;
     return reward / risk;
   }
+
   function updateRR() {
     const e = parseFloat(document.getElementById('rr-entry').value);
     const s = parseFloat(document.getElementById('rr-stop').value);
@@ -1168,11 +1456,10 @@
     const rr = calcRR(e, s, t);
     document.getElementById('rr-value').textContent = rr === null ? '—' : rr.toFixed(2);
   }
-  ['rr-entry','rr-stop','rr-take'].forEach(function(id) {
+  ['rr-entry', 'rr-stop', 'rr-take'].forEach(function(id) {
     document.getElementById(id).addEventListener('input', updateRR);
   });
 
-  // ===== SHOT =====
   document.getElementById('in-shot').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -1185,7 +1472,6 @@
     reader.readAsDataURL(file);
   });
 
-  // ===== SHEET =====
   document.getElementById('open-sheet').onclick = function() {
     if (!isEditor || !state.active) return;
     document.getElementById('sheet').classList.add('on');
@@ -1198,7 +1484,6 @@
   document.getElementById('sheet-cancel').onclick = closeSheet;
   document.getElementById('sheet-overlay').onclick = closeSheet;
 
-  // ===== STATS =====
   function calcStats(trades) {
     const total = trades.length;
     const wins = trades.filter(function(t) { return t.pnl > 0; }).length;
@@ -1210,12 +1495,12 @@
     const avgRR = rrs.length ? (rrs.reduce(function(a, b) { return a + b; }, 0) / rrs.length) : null;
     return { total: total, wins: wins, wr: wr, pnl: pnl, avgRR: avgRR };
   }
+
   function calcDailyPnl(trades) {
     return trades.filter(function(t) { return t.date === todayStr; })
       .reduce(function(s, t) { return s + (t.pnl || 0); }, 0);
   }
 
-  // ===== AUTO COMPLETE =====
   function checkAutoComplete() {
     if (!state.active) return false;
     const s = calcStats(state.trades);
@@ -1226,6 +1511,7 @@
     if (s.pnl <= -totalLimitUsd) { completeChallenge('failed', s); return true; }
     return false;
   }
+
   function completeChallenge(result, stats) {
     const now = Date.now();
     state.archive.unshift({
@@ -1243,12 +1529,12 @@
     state.active = null;
     state.trades = [];
     saveToCloud();
-    render(); renderArchive();
+    render();
+    renderArchive();
     showToast(result === 'passed' ? 'Challenge Passed' : 'Challenge Failed',
               result === 'passed' ? 'success' : 'error');
   }
 
-  // ===== RENDER =====
   function render() {
     const container = document.getElementById('active-chal-container');
     const tradesSection = document.getElementById('active-trades-section');
@@ -1285,6 +1571,9 @@
     const pnlClass = s.pnl > 0 ? 'pos' : s.pnl < 0 ? 'neg' : 'neu';
     const rrText = s.avgRR !== null ? ' · Avg RR ' + s.avgRR.toFixed(2) : '';
 
+    const dailyColor = dailyUsed > 0 ? 'danger' : 'ok';
+    const totalColor = totalUsed > 0 ? 'danger' : 'ok';
+
     container.innerHTML =
       '<div class="challenge-hero">' +
         '<div class="chal-label">Active Challenge</div>' +
@@ -1296,28 +1585,48 @@
         '<div class="progress-group">' +
           '<div class="progress-top">' +
             '<div class="progress-name">Target</div>' +
-            '<div class="progress-num ' + (targetPct >= 100 ? 'ok' : 'dark') + '">' + fmtMoney(Math.max(0, s.pnl)) + ' / $' + targetUsd.toLocaleString('ru-RU') + '</div>' +
+            '<div class="progress-num ' + (targetPct >= 100 ? 'ok' : 'dark') + '">' +
+              fmtMoney(Math.max(0, s.pnl)) + ' / $' + targetUsd.toLocaleString('ru-RU') +
+            '</div>' +
           '</div>' +
-          '<div class="progress-bar"><div class="progress-fill accent" style="width:' + targetPct + '%"></div></div>' +
-          '<div class="progress-sub">' + (targetPct >= 100 ? 'Target reached' : 'Осталось набрать $' + targetRemain.toLocaleString('ru-RU', {maximumFractionDigits: 0})) + '</div>' +
+          '<div class="progress-bar">' +
+            '<div class="progress-fill accent" style="width:' + targetPct + '%"></div>' +
+          '</div>' +
+          '<div class="progress-sub">' +
+            (targetPct >= 100 ? 'Target reached' : 'Осталось набрать $' + targetRemain.toLocaleString('ru-RU', {maximumFractionDigits: 0})) +
+          '</div>' +
         '</div>' +
 
         '<div class="progress-group">' +
           '<div class="progress-top">' +
             '<div class="progress-name">Daily Loss Limit</div>' +
-            '<div class="progress-num ' + (dailyPct >= 100 ? 'danger' : dailyPct >= 70 ? 'warn' : 'ok') + '">−$' + dailyUsed.toLocaleString('ru-RU', {maximumFractionDigits: 0}) + ' / −$' + dailyLimitUsd.toLocaleString('ru-RU') + '</div>' +
+            '<div class="progress-num ' + dailyColor + '">' +
+              '−$' + dailyUsed.toLocaleString('ru-RU', {maximumFractionDigits: 0}) +
+              ' / −$' + dailyLimitUsd.toLocaleString('ru-RU') +
+            '</div>' +
           '</div>' +
-          '<div class="progress-bar"><div class="progress-fill ' + (dailyPct >= 100 ? 'danger' : dailyPct >= 70 ? 'warn' : 'ok') + '" style="width:' + dailyPct + '%"></div></div>' +
-          '<div class="progress-sub">' + (dailyPct >= 100 ? 'Daily limit exceeded' : 'Осталось сегодня $' + (dailyLimitUsd - dailyUsed).toLocaleString('ru-RU', {maximumFractionDigits: 0})) + '</div>' +
+          '<div class="progress-bar">' +
+            '<div class="progress-fill ' + dailyColor + '" style="width:' + dailyPct + '%"></div>' +
+          '</div>' +
+          '<div class="progress-sub">' +
+            (dailyPct >= 100 ? 'Daily limit exceeded' : 'Осталось сегодня $' + (dailyLimitUsd - dailyUsed).toLocaleString('ru-RU', {maximumFractionDigits: 0})) +
+          '</div>' +
         '</div>' +
 
         '<div class="progress-group">' +
           '<div class="progress-top">' +
             '<div class="progress-name">Max Loss</div>' +
-            '<div class="progress-num ' + (totalPct >= 100 ? 'danger' : totalPct >= 70 ? 'warn' : 'ok') + '">−$' + totalUsed.toLocaleString('ru-RU', {maximumFractionDigits: 0}) + ' / −$' + totalLimitUsd.toLocaleString('ru-RU') + '</div>' +
+            '<div class="progress-num ' + totalColor + '">' +
+              '−$' + totalUsed.toLocaleString('ru-RU', {maximumFractionDigits: 0}) +
+              ' / −$' + totalLimitUsd.toLocaleString('ru-RU') +
+            '</div>' +
           '</div>' +
-          '<div class="progress-bar"><div class="progress-fill ' + (totalPct >= 100 ? 'danger' : totalPct >= 70 ? 'warn' : 'ok') + '" style="width:' + totalPct + '%"></div></div>' +
-          '<div class="progress-sub">' + (totalPct >= 100 ? 'Account blown' : 'Осталось до сгорания $' + (totalLimitUsd - totalUsed).toLocaleString('ru-RU', {maximumFractionDigits: 0})) + '</div>' +
+          '<div class="progress-bar">' +
+            '<div class="progress-fill ' + totalColor + '" style="width:' + totalPct + '%"></div>' +
+          '</div>' +
+          '<div class="progress-sub">' +
+            (totalPct >= 100 ? 'Account blown' : 'Осталось до сгорания $' + (totalLimitUsd - totalUsed).toLocaleString('ru-RU', {maximumFractionDigits: 0})) +
+          '</div>' +
         '</div>' +
 
         '<div class="chal-actions">' +
@@ -1377,7 +1686,8 @@
         ev.stopPropagation();
         if (!isEditor) return;
         state.trades.splice(+b.dataset.i, 1);
-        saveToCloud(); render();
+        saveToCloud();
+        render();
       };
     });
 
@@ -1389,7 +1699,6 @@
     });
   }
 
-  // ===== ARCHIVE =====
   function renderArchive() {
     const list = document.getElementById('archive-list');
     document.getElementById('archive-count').textContent = state.archive.length || '';
@@ -1403,7 +1712,10 @@
       const pnlStr = fmtMoney(a.finalPnl);
       const cls = a.finalPnl > 0 ? 'pos' : a.finalPnl < 0 ? 'neg' : '';
       const dateStr = new Date(a.endedAt).toLocaleDateString('ru-RU');
+      const delBtn = isEditor ? '<button class="archive-del show" data-idx="' + i + '">✕</button>' : '';
+
       return '<div class="archive-item ' + a.result + '" data-idx="' + i + '">' +
+        delBtn +
         '<div class="archive-top">' +
           '<div>' +
             '<div class="archive-name">' + esc(a.name) + '</div>' +
@@ -1419,7 +1731,24 @@
     }).join('');
 
     list.querySelectorAll('.archive-item').forEach(function(item) {
-      item.onclick = function() { openArchiveDetail(+item.dataset.idx); };
+      item.onclick = function(ev) {
+        if (ev.target.classList.contains('archive-del')) return;
+        openArchiveDetail(+item.dataset.idx);
+      };
+    });
+
+    list.querySelectorAll('.archive-del').forEach(function(b) {
+      b.onclick = function(ev) {
+        ev.stopPropagation();
+        if (!isEditor) return;
+        const idx = +b.dataset.idx;
+        const a = state.archive[idx];
+        if (!confirm('Удалить "' + a.name + '" из архива? Это действие нельзя отменить.')) return;
+        state.archive.splice(idx, 1);
+        saveToCloud();
+        renderArchive();
+        showToast('Challenge deleted', 'success');
+      };
     });
   }
 
@@ -1493,7 +1822,6 @@
     render();
   };
 
-  // ===== NEW CHALLENGE =====
   window.openNewChal = function() {
     document.getElementById('nc-name').value = '';
     document.getElementById('nc-size').value = '';
@@ -1515,7 +1843,7 @@
     document.getElementById('nc-daily-hint').textContent = '= $' + (size * d / 100).toLocaleString('ru-RU', {maximumFractionDigits: 0});
     document.getElementById('nc-total-hint').textContent = '= $' + (size * tt / 100).toLocaleString('ru-RU', {maximumFractionDigits: 0});
   }
-  ['nc-size','nc-target','nc-daily','nc-total'].forEach(function(id) {
+  ['nc-size', 'nc-target', 'nc-daily', 'nc-total'].forEach(function(id) {
     document.getElementById(id).addEventListener('input', updateHints);
   });
 
@@ -1537,12 +1865,14 @@
 
     state.active = { name: name, size: size, target: target, daily: daily, total: total, startedAt: Date.now() };
     state.trades = [];
+
     document.getElementById('new-chal-modal').classList.remove('on');
-    saveToCloud(); render();
+    saveToCloud();
+    render();
+    renderCalendar();
     showToast('Challenge created', 'success');
   };
 
-  // ===== FORCE COMPLETE =====
   window.forceComplete = function(result) {
     if (!state.active) return;
     const s = calcStats(state.trades);
@@ -1551,7 +1881,6 @@
     completeChallenge(result, s);
   };
 
-  // ===== SAVE TRADE =====
   document.getElementById('sheet-save').onclick = function() {
     if (!isEditor || !state.active) return;
     const ticker = document.getElementById('in-ticker').value.trim().toUpperCase();
@@ -1592,11 +1921,11 @@
     if (!completed) {
       saveToCloud();
       render();
+      renderCalendar();
       showToast('Trade added', 'success');
     }
   };
 
-  // ===== FILTERS =====
   document.querySelectorAll('.chip').forEach(function(c) {
     c.onclick = function() {
       document.querySelectorAll('.chip').forEach(function(x) { x.classList.remove('active'); });
@@ -1606,7 +1935,6 @@
     };
   });
 
-  // ===== CALENDAR =====
   function renderCalendar() {
     const year = calDate.getFullYear();
     const month = calDate.getMonth();
@@ -1614,9 +1942,6 @@
     document.getElementById('cal-month').textContent = monthNames[month] + ' ' + year;
 
     const allTrades = state.trades.slice();
-    state.archive.forEach(function(a) {
-      a.trades.forEach(function(t) { allTrades.push(t); });
-    });
 
     const byDay = {};
     allTrades.forEach(function(t) {
@@ -1667,15 +1992,13 @@
   document.getElementById('cal-prev').onclick = function() { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(); };
   document.getElementById('cal-next').onclick = function() { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(); };
 
-  // ===== MODAL =====
   document.getElementById('modal').onclick = function() {
     document.getElementById('modal').classList.remove('on');
   };
 
-  // ===== EXPORT / IMPORT =====
   document.getElementById('btn-export').onclick = function() {
     if (!isEditor) return;
-    const data = { version: 4, exportedAt: new Date().toISOString(), state: state };
+    const data = { version: 5, exportedAt: new Date().toISOString(), state: state };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1703,7 +2026,7 @@
             state = data.state;
             if (!state.archive) state.archive = [];
             if (!state.trades) state.trades = [];
-            saveToCloud(); render(); renderArchive();
+            saveToCloud(); render(); renderArchive(); renderCalendar();
             showToast('Imported', 'success');
           }
         } catch (err) { showToast('Invalid file', 'error'); }
@@ -1718,11 +2041,10 @@
     if (!confirm('Delete ALL data? This cannot be undone.')) return;
     if (!confirm('Really sure? Last chance.')) return;
     state = { active: null, trades: [], archive: [] };
-    saveToCloud(); render(); renderArchive();
+    saveToCloud(); render(); renderArchive(); renderCalendar();
     showToast('Data reset', 'success');
   };
 
-  // ===== CLOUD SYNC =====
   function saveToCloud() {
     try { localStorage.setItem(DATA_KEY, JSON.stringify(state)); } catch(e) {}
     if (suppressSync || !isEditor || !DOC_REF) return;
@@ -1737,7 +2059,6 @@
 
   function loadFromCloud() {
     if (!DOC_REF) {
-      // Firebase недоступен — только локально
       const local = JSON.parse(localStorage.getItem(DATA_KEY) || 'null');
       if (local) {
         state = local;
@@ -1769,7 +2090,6 @@
       checkAuth();
       render(); renderArchive();
 
-      // Подписка на изменения
       DOC_REF.onSnapshot(function(docSnap) {
         if (!docSnap.exists) return;
         const data = docSnap.data();
