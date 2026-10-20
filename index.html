@@ -1917,13 +1917,16 @@
     updateRR();
     closeSheet();
 
-    const completed = checkAutoComplete();
-    if (!completed) {
-      saveToCloud();
-      render();
-      renderCalendar();
-      showToast('Trade added', 'success');
-    }
+   saveToCloud();
+    render();
+    renderCalendar();
+    showToast('Trade added', 'success');
+
+    // Проверяем на завершение с задержкой в 2 секунды, 
+    // чтобы ты успел увидеть сделку и челлендж не пропал мгновенно
+    setTimeout(function() {
+      checkAutoComplete();
+    }, 2000);
   };
 
   document.querySelectorAll('.chip').forEach(function(c) {
